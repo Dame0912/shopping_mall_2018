@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>spu列表</title>
+</head>
+<body>
+
+<table id="spulist_dg" class="easyui-datagrid" title="spu列表"
+       data-options="singleSelect:true,method:'get',toolbar:'#spulist_tb'">
+    <thead>
+    <tr>
+        <th data-options="field:'id'" width="10%">商品id </th>
+        <th data-options="field:'spuName'" width="30%">商品名称</th>
+        <th data-options="field:'description'" width="60%">商品描述 </th>
+    </tr>
+    </thead>
+</table>
+
+<div id="spulist_tb" style="padding:5px;height:auto">
+    <div style="margin-bottom:5px">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addSpuInfo()">添加</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editSpuInfo()">编辑</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addSkuInfo()">增加sku</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="showSkuInfoList()">sku列表</a>
+    </div>
+    <div>
+        一级分类：
+        <select id="ctg1ForSpuList"  class="easyui-combobox" style="width:100px"
+                data-options="valueField:'id',textField:'name',url:'getCatalog1',
+            onSelect:function(rec){
+                $('#ctg2ForSpuList').combobox('clear');
+                $('#ctg3ForSpuList').combobox('clear');
+                $('#ctg2ForSpuList').combobox('reload','getCatalog2?catalog1Id='+rec.id);
+            }
+        "></select>
+        二级分类：
+        <select name="ctg2ForSpuList" id="ctg2ForSpuList"  class="easyui-combobox" style="width:100px"
+                data-options="valueField:'id',textField:'name',
+            onSelect:function(rec){
+                $('#ctg3ForSpuList').combobox('clear');
+                $('#ctg3ForSpuList').combobox('reload','getCatalog3?catalog2Id='+rec.id);
+            }"
+        ></select>
+        三级分类：
+        <select name="ctg3ForSpuList" id="ctg3ForSpuList"  class="easyui-combobox" style="width:100px"
+                data-options="valueField:'id',textField:'name',
+                    onSelect:function(rec){
+                        $('#spulist_dg').datagrid({url:'spuList?catalog3Id='+rec.id});
+                    }">
+        </select>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="javascript:reloadSpuList()">刷新属性列表</a>
+    </div>
+</div>
+
+
+<!--
+    由于这次弹出框是新的窗体，虽然整个后台系统是一个单一页面，但是如果把所有代码都集中到一个html的话，
+    维护起来非常不方便，可读性也差。所以咱们利用页面的渲染工具themeleaf的一个标签，
+    把一段代码提取到另外一个html文件中.这个有点类似于Jsp的<jsp:include page="">标签。
+    这样我们跟这个新增弹出框窗体有关系的都可以放到spuInfoPage.html这个文件中了。
+-->
+<div th:include="spuInfoPage"></div>
+
+<div th:include="skuInfoPage"></div>
+
+<div th:include="skuListPage"></div>
+
+</body>
+
+<script type="application/javascript">
+
+    function addSkuInfo() {
+        var spuRow = $('#spulist_dg').datagrid('getSelected');
+        var ctg3val=$("#ctg3ForSpuList").combobox('getValue');
+        initSkuInfoDlg(spuRow.id,'',ctg3val);//在skuInfoPage.html中
+    }
+
+    function editSpuInfo(){
+        var spuInfo = $('#spulist_dg').datagrid('getSelected');
+        initSpuInfoDlg(spuInfo);
+    }
+
+    function addSpuInfo() {
+        initSpuInfoDlg();
+    }
+
+</script>
+
+
+</html>

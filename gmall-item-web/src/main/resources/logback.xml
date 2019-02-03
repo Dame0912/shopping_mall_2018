@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="log.path" value="F:/gmall/logs/item/web" />
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    <appender name="otherAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/other.log</file>
+        <!-- 按照时间和大小一起保存日志 -->
+        <!-- 时间要求 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 按天来分割日志，如果想按小时则改为%d{yyyy-MM-dd-HH}，如果想按分钟改为%d{yyyy-MM-dd-HH-mm} -->
+            <fileNamePattern>${log.path}/other.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 日志最大保留天数 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- 日志大小要求 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <!-- 超过10M的话就会滚动个日志文件 -->
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="itemWebAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/itemWeb.log</file>
+        <!-- 按照时间和大小一起保存日志 -->
+        <!-- 时间要求 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 按天来分割日志，如果想按小时则改为%d{yyyy-MM-dd-HH}，如果想按分钟改为%d{yyyy-MM-dd-HH-mm} -->
+            <fileNamePattern>${log.path}/itemWeb.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 日志最大保留天数 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- 日志大小要求 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <!-- 超过10M的话就会滚动个日志文件 -->
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.dame.gmall.item.controller" level="INFO" additivity="false">
+        <appender-ref ref="itemWebAppender" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <root>
+        <level value="INFO"></level>
+        <appender-ref ref="CONSOLE"></appender-ref>
+        <appender-ref ref="otherAppender"></appender-ref>
+    </root>
+</configuration>

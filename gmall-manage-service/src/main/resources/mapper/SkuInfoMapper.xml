@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dame.gmall.manage.mapper.SkuInfoMapper">
+    <select id="selectSkuInfoListBySpu" parameterType="long" resultMap="skuInfoListMap">
+        SELECT sku.*,
+        si.id skuimage_id,
+        si.img_name,
+        si.img_url,
+        si.spu_img_id,
+        si.is_default,
+        ss.id sku_sale_attr_value_id,
+        ss.sale_attr_id,
+        ss.sale_attr_value_id,
+        ss.sale_attr_name,
+        ss.sale_attr_value_name,
+        sv.id sku_attr_value_id,
+        sv.attr_id,
+        sv.value_id
+        FROM sku_info sku
+        LEFT JOIN  sku_image si  ON sku.id =si.sku_id
+        LEFT JOIN  sku_sale_attr_value ss ON sku.id =ss.sku_id
+        LEFT JOIN  sku_attr_value  sv ON sku.id =sv.sku_id
+        where  sku.spu_id=#{spu_id}
+    </select>
+    <resultMap id="skuInfoListMap" type="com.dame.gamll.bean.SkuInfo" autoMapping="true">
+        <result property="id" column="id"></result>
+
+        <collection property="skuImageList" ofType="com.dame.gamll.bean.SkuImage" autoMapping="true">
+            <result property="id" column="skuimage_id"></result>
+            <result property="skuId" column="id"></result>
+        </collection>
+
+        <collection property="skuSaleAttrValueList" ofType="com.dame.gamll.bean.SkuSaleAttrValue" autoMapping="true">
+            <result property="id" column="sku_sale_attr_value_id"></result>
+            <result property="skuId" column="id"></result>
+        </collection>
+
+        <collection property="skuAttrValueList" ofType="com.dame.gamll.bean.SkuAttrValue" autoMapping="true">
+            <result property="id" column="sku_attr_value_id"></result>
+            <result property="skuId" column="id"></result>
+        </collection>
+    </resultMap>
+</mapper>
+
