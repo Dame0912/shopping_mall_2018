@@ -1,13 +1,18 @@
 package com.dame.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.dame.gamll.bean.*;
+import com.dame.gmall.config.RedisUtil;
+import com.dame.gmall.manage.constant.ManageConst;
 import com.dame.gmall.manage.mapper.*;
 import com.dame.gmall.service.ManageService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.Jedis;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
@@ -55,6 +60,9 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     SkuSaleAttrValueMapper skuSaleAttrValueMapper;
+
+    @Autowired
+    RedisUtil redisUtil;
 
     @Override
     public List<BaseCatalog1> getCatalog1() {
@@ -249,6 +257,50 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public SkuInfo getSkuInfo(String skuId) {
+        SkuInfo skuInfo = null;
+        try {
+            Jedis jedis = redisUtil.getJedis();
+            String skuInfoKey = ManageConst.SKUKEY_PREFIX + skuId + ManageConst.SKUKEY_SUFFIX;
+            String skuInfoJson = jedis.get(skuInfoKey);
+            // 防止缓存击穿和雪崩，使用锁机制
+            if (StringUtils.isBlank(skuInfoJson)) {
+                // 没有数据 ,需要加锁！取出完数据，还要放入缓存中，下次直接从缓存中取得即可！
+                System.out.println("没有命中缓存");
+                // 定义key
+                String skuLockKey = ManageConst.SKUKEY_PREFIX + skuId + ManageConst.SKULOCK_SUFFIX;
+                // 生成锁
+                // nxxx： 只能取NX或者XX，如果取NX，则只有当key不存在是才进行set，如果取XX，则只有当key已经存在时才进行set
+                // expx： 只能取EX或者PX，代表数据过期时间的单位，EX代表秒，PX代表毫秒。
+                // time： 过期时间，单位是expx所代表的单位
+                String lockKey = jedis.set(skuLockKey, "LOCK", "NX", "PX", ManageConst.SKULOCK_EXPIRE_PX);
+                if ("OK".equals(lockKey)) {
+                    // 获取到锁
+                    // 从数据库中读取数据
+                    skuInfo = getSkuInfoDB(skuId);
+                    // 将结果存入缓存
+                    String jsonString = JSON.toJSONString(skuInfo);
+                    jedis.setex(skuInfoKey, ManageConst.SKUKEY_TIMEOUT, jsonString);
+                    jedis.close();
+                    return skuInfo;
+                } else {
+                    // 未获取到锁
+                    System.out.println("未获取到锁");
+                    Thread.sleep(1000);
+                    // 自旋
+                    return getSkuInfo(skuId);
+                }
+            } else {
+                skuInfo = JSON.parseObject(skuInfoJson, SkuInfo.class);
+                jedis.close();
+                return skuInfo;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return getSkuInfoDB(skuId);
+    }
+
+    public SkuInfo getSkuInfoDB(String skuId) {
         SkuInfo skuInfo = skuInfoMapper.selectByPrimaryKey(skuId);
         SkuImage skuImage = new SkuImage();
         skuImage.setSkuId(skuId);
