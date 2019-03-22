@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.dame.gmall.manage.mapper.SkuSaleAttrValueMapper">
-    <select id="selectSkuSaleAttrValueListBySpu" parameterType="String" resultType="com.dame.gamll.bean.SkuSaleAttrValue">
+    <select id="selectSkuSaleAttrValueListBySpu" parameterType="String" resultType="com.dame.gmall.bean.SkuSaleAttrValue">
         SELECT
             ssav.*
         FROM

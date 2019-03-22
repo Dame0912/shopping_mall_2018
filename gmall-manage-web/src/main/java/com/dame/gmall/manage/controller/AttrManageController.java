@@ -1,13 +1,17 @@
 package com.dame.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.dame.gamll.bean.*;
+import com.dame.gmall.bean.*;
+import com.dame.gmall.service.ListService;
 import com.dame.gmall.service.ManageService;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +23,10 @@ import java.util.Map;
 public class AttrManageController {
 
     @Reference
-    ManageService manageService;
+    private ManageService manageService;
+
+    @Reference
+    private ListService listService;
 
     @RequestMapping("attrListPage")
     public String getAttrListPage(){
@@ -71,6 +78,24 @@ public class AttrManageController {
     public List<BaseAttrValue> getAttrValueList(HttpServletRequest request){
         String attrId = request.getParameter("attrId");
         return manageService.getAttrInfo(attrId).getAttrValueList();
+    }
+
+    /**
+     * 商品上架，也就是将数据插入es中
+     * @param skuId
+     */
+    @RequestMapping(value = "onSale", method = RequestMethod.GET)
+    @ResponseBody
+    public void onSale(String skuId){
+        try {
+            SkuInfo skuInfo = manageService.getSkuInfo(skuId);
+            SkuLsInfo skuLsInfo = new SkuLsInfo();
+            BeanUtils.copyProperties(skuLsInfo,skuInfo);
+            listService.saveSkuInfo(skuLsInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("...AttrManagerController...onSale...失败...");
+        }
     }
 
 }

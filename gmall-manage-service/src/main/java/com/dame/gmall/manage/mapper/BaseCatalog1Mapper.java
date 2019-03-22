@@ -1,6 +1,6 @@
 package com.dame.gmall.manage.mapper;
 
-import com.dame.gamll.bean.BaseCatalog1;
+import com.dame.gmall.bean.BaseCatalog1;
 import tk.mybatis.mapper.common.Mapper;
 
 public interface BaseCatalog1Mapper extends Mapper<BaseCatalog1> {

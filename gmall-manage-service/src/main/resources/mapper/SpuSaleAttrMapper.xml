@@ -10,9 +10,9 @@
         where  sa.spu_id=#{spu_id}
     </select>
 
-    <resultMap id="spuSaleAttrMap" type="com.dame.gamll.bean.SpuSaleAttr" autoMapping="true">
+    <resultMap id="spuSaleAttrMap" type="com.dame.gmall.bean.SpuSaleAttr" autoMapping="true">
         <result property="id" column="id" ></result>
-        <collection property="spuSaleAttrValueList" ofType="com.dame.gamll.bean.SpuSaleAttrValue" autoMapping="true">
+        <collection property="spuSaleAttrValueList" ofType="com.dame.gmall.bean.SpuSaleAttrValue" autoMapping="true">
             <result property="id" column="sale_attr_value_id" ></result>
         </collection>
     </resultMap>

@@ -1,6 +1,6 @@
 package com.dame.gmall.manage.mapper;
 
-import com.dame.gamll.bean.SpuSaleAttr;
+import com.dame.gmall.bean.SpuSaleAttr;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.Mapper;
 

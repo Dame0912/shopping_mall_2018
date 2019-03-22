@@ -2,14 +2,12 @@ package com.dame.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.dame.gamll.bean.*;
+import com.dame.gmall.bean.*;
 import com.dame.gmall.config.RedisUtil;
 import com.dame.gmall.manage.constant.ManageConst;
 import com.dame.gmall.manage.mapper.*;
 import com.dame.gmall.service.ManageService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
@@ -301,11 +299,23 @@ public class ManageServiceImpl implements ManageService {
     }
 
     public SkuInfo getSkuInfoDB(String skuId) {
+        // 单纯的信息
         SkuInfo skuInfo = skuInfoMapper.selectByPrimaryKey(skuId);
+        // 图片
         SkuImage skuImage = new SkuImage();
         skuImage.setSkuId(skuId);
         List<SkuImage> skuImageList = skuImageMapper.select(skuImage);
         skuInfo.setSkuImageList(skuImageList);
+        // 平台属性
+        SkuAttrValue skuAttrValue = new SkuAttrValue();
+        skuAttrValue.setSkuId(skuId);
+        List<SkuAttrValue> skuAttrValues = skuAttrValueMapper.select(skuAttrValue);
+        skuInfo.setSkuAttrValueList(skuAttrValues);
+        // 销售属性
+        SkuSaleAttrValue skuSaleAttrValue = new SkuSaleAttrValue();
+        skuSaleAttrValue.setSkuId(skuId);
+        List<SkuSaleAttrValue> skuSaleAttrValues = skuSaleAttrValueMapper.select(skuSaleAttrValue);
+        skuInfo.setSkuSaleAttrValueList(skuSaleAttrValues);
         return skuInfo;
     }
 

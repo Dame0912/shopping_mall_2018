@@ -1,10 +1,10 @@
 package com.dame.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.dame.gamll.bean.SkuInfo;
-import com.dame.gamll.bean.SpuImage;
-import com.dame.gamll.bean.SpuSaleAttr;
-import com.dame.gamll.bean.SpuSaleAttrValue;
+import com.dame.gmall.bean.SkuInfo;
+import com.dame.gmall.bean.SpuImage;
+import com.dame.gmall.bean.SpuSaleAttr;
+import com.dame.gmall.bean.SpuSaleAttrValue;
 import com.dame.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,23 +58,23 @@ public class SkuManageController {
         return spuSaleAttrList;
     }
 
-    /**
-     * 查询销售属性值列表
-     *
-     * @param httpServletRequest
-     * @return
-     */
-    @RequestMapping("spuSaleAttrValueList")
-    @ResponseBody
-    public List<SpuSaleAttrValue> getSpuSaleAttrValueList(HttpServletRequest httpServletRequest) {
-        String spuId = httpServletRequest.getParameter("spuId");
-        String saleAttrId = httpServletRequest.getParameter("saleAttrId");
-        SpuSaleAttrValue spuSaleAttrValue = new SpuSaleAttrValue();
-        spuSaleAttrValue.setSpuId(spuId);
-        spuSaleAttrValue.setSaleAttrId(saleAttrId);
-        List<SpuSaleAttrValue> spuSaleAttrValueList = manageService.getSpuSaleAttrValueList(spuSaleAttrValue);
-        return spuSaleAttrValueList;
-    }
+//    /**
+//     * 查询销售属性值列表
+//     *
+//     * @param httpServletRequest
+//     * @return
+//     */
+//    @RequestMapping("spuSaleAttrValueList")
+//    @ResponseBody
+//    public List<SpuSaleAttrValue> getSpuSaleAttrValueList(HttpServletRequest httpServletRequest) {
+//        String spuId = httpServletRequest.getParameter("spuId");
+//        String saleAttrId = httpServletRequest.getParameter("saleAttrId");
+//        SpuSaleAttrValue spuSaleAttrValue = new SpuSaleAttrValue();
+//        spuSaleAttrValue.setSpuId(spuId);
+//        spuSaleAttrValue.setSaleAttrId(saleAttrId);
+//        List<SpuSaleAttrValue> spuSaleAttrValueList = manageService.getSpuSaleAttrValueList(spuSaleAttrValue);
+//        return spuSaleAttrValueList;
+//    }
 
     /**
      * 保存 SKu 信息

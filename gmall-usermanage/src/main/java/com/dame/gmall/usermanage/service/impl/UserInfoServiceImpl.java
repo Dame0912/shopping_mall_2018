@@ -1,8 +1,8 @@
 package com.dame.gmall.usermanage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.dame.gamll.bean.UserAddress;
-import com.dame.gamll.bean.UserInfo;
+import com.dame.gmall.bean.UserAddress;
+import com.dame.gmall.bean.UserInfo;
 import com.dame.gmall.service.UserInfoService;
 import com.dame.gmall.usermanage.mapper.UserAddressMapper;
 import com.dame.gmall.usermanage.mapper.UserInfoMapper;

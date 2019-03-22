@@ -1,7 +1,7 @@
 package com.dame.gmall.service;
 
-import com.dame.gamll.bean.UserAddress;
-import com.dame.gamll.bean.UserInfo;
+import com.dame.gmall.bean.UserAddress;
+import com.dame.gmall.bean.UserInfo;
 
 import java.util.List;
 

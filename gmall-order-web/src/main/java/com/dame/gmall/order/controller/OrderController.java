@@ -1,7 +1,7 @@
 package com.dame.gmall.order.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.dame.gamll.bean.UserAddress;
+import com.dame.gmall.bean.UserAddress;
 import com.dame.gmall.service.UserInfoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

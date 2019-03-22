@@ -1,6 +1,6 @@
 package com.dame.gmall.usermanage.controller;
 
-import com.dame.gamll.bean.UserInfo;
+import com.dame.gmall.bean.UserInfo;
 import com.dame.gmall.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

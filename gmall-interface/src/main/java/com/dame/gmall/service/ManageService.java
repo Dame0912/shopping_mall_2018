@@ -1,6 +1,6 @@
 package com.dame.gmall.service;
 
-import com.dame.gamll.bean.*;
+import com.dame.gmall.bean.*;
 
 import java.util.List;
 

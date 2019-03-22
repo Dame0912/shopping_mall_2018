@@ -2,9 +2,9 @@ package com.dame.gmall.item.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.dame.gamll.bean.SkuInfo;
-import com.dame.gamll.bean.SkuSaleAttrValue;
-import com.dame.gamll.bean.SpuSaleAttr;
+import com.dame.gmall.bean.SkuInfo;
+import com.dame.gmall.bean.SkuSaleAttrValue;
+import com.dame.gmall.bean.SpuSaleAttr;
 import com.dame.gmall.service.ManageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
