@@ -25,6 +25,7 @@ import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.highlight.Highlighter;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,8 +94,11 @@ public class ListServiceImpl implements ListService {
             SkuLsInfo skuLsInfo = hit.source;
             // 将skuName给替换掉
             Map<String, List<String>> highlight = hit.highlight;
-            String skuNameHI = highlight.get("skuName").get(0);
-            skuLsInfo.setSkuName(skuNameHI);
+            if (!CollectionUtils.isEmpty(highlight)){
+                String skuNameHI = highlight.get("skuName").get(0);
+                skuLsInfo.setSkuName(skuNameHI);
+            }
+
             skuLsInfoList.add(skuLsInfo);
         }
         skuLsResult.setSkuLsInfoList(skuLsInfoList);

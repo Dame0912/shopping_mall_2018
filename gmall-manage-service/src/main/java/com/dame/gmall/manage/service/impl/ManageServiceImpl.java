@@ -7,6 +7,7 @@ import com.dame.gmall.config.RedisUtil;
 import com.dame.gmall.manage.constant.ManageConst;
 import com.dame.gmall.manage.mapper.*;
 import com.dame.gmall.service.ManageService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -328,6 +329,12 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public List<SkuSaleAttrValue> getSkuSaleAttrValueListBySpu(String spuId) {
         return skuSaleAttrValueMapper.selectSkuSaleAttrValueListBySpu(spuId);
+    }
+
+    @Override
+    public List<BaseAttrInfo> getAttrList(List<String> attrValueIdList) {
+        String attrValIds = StringUtils.join(attrValueIdList.toArray(), ",");
+        return baseAttrInfoMapper.getBaseAttrInfoListByAttrValueIds(attrValIds);
     }
 
 }

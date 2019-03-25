@@ -65,4 +65,9 @@ public interface ManageService {
      *  根据spuId查询出旗下的所有sku销售属性值
      */
     public List<SkuSaleAttrValue> getSkuSaleAttrValueListBySpu(String spuId);
+
+    /**
+     *  根据平台属性值id集合获取到平台属性集合
+     */
+    public List<BaseAttrInfo> getAttrList(List<String> attrValueIdList);
 }
