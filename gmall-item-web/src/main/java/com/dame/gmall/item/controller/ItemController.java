@@ -5,10 +5,14 @@ import com.alibaba.fastjson.JSON;
 import com.dame.gmall.bean.SkuInfo;
 import com.dame.gmall.bean.SkuSaleAttrValue;
 import com.dame.gmall.bean.SpuSaleAttr;
+import com.dame.gmall.service.ListService;
 import com.dame.gmall.service.ManageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +29,13 @@ public class ItemController {
 
     @Reference
     private ManageService manageService;
+
+    @Reference
+    private ListService listService;
+
+    @Autowired
+    @Qualifier("hotScoreExecutor")
+    private ThreadPoolTaskExecutor hotScoreTaskExecutor;
 
     @RequestMapping("{skuId}.html")
     public String skuInfoPage(@PathVariable(value = "skuId") String skuId, ModelMap modelMap) {
@@ -56,7 +67,16 @@ public class ItemController {
             }
         }
         String valuesSkuJson = JSON.toJSONString(map);
-        modelMap.addAttribute("valuesSkuJson",valuesSkuJson);
+        modelMap.addAttribute("valuesSkuJson", valuesSkuJson);
+
+        // 保存热度分数
+        hotScoreTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                listService.incrHotScore(skuId);
+            }
+        });
+
         LOGGER.info("skuInfoPage结束，出参valuesSkuJson：{}", valuesSkuJson);
         return "item";
     }

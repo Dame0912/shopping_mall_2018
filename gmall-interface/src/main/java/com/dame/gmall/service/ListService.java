@@ -11,4 +11,7 @@ public interface ListService {
 
     // 从es中查询数据
     public SkuLsResult search(SkuLsParams skuLsParams);
+
+    // 保存商品的热度分数
+    public void incrHotScore(String skuId);
 }

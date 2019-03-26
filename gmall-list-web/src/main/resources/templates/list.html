@@ -70,8 +70,10 @@
             筛选条件	    
         </div>
 		<i><img src="/image/right-@1x.png" alt=""></i>
-        <span>&quot;小米&quot;</span>
-		<a class="select-attr" href="#"> 2G<b> ✖ </b>
+        <span th:if="${keyword} != null"  th:utext="'&quot;'+ ${keyword} +'&quot;'">&quot;小米&quot;</span>
+
+		<a class="select-attr" th:each="baseAttrValue:${baseAttrValuesList}" th:utext="${baseAttrValue.valueName} + '<b> ✖ </b>'"
+           th:href="'/list.html?' + ${baseAttrValue.urlParam}" href="#">2G<b> ✖ </b>
 		</a>
     </div>
 </div>
@@ -278,8 +280,6 @@
 </footer>
 
 
-
-<script src="/js/success.js"></script>
 <script language="JavaScript">
     function item(skuid) {
         window.location.href="http://item.gmall.com/"+skuid+".html";

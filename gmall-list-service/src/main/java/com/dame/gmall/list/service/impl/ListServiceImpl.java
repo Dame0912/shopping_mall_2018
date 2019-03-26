@@ -4,28 +4,24 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.dame.gmall.bean.SkuLsInfo;
 import com.dame.gmall.bean.SkuLsParams;
 import com.dame.gmall.bean.SkuLsResult;
+import com.dame.gmall.config.RedisUtil;
 import com.dame.gmall.service.ListService;
 import io.searchbox.client.JestClient;
-import io.searchbox.core.DocumentResult;
-import io.searchbox.core.Index;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
+import io.searchbox.core.*;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;
-import org.elasticsearch.search.highlight.Highlighter;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +32,34 @@ import java.util.Map;
 public class ListServiceImpl implements ListService {
 
     @Autowired
+    private RedisUtil redisUtil;
+
+    /**
+     * 操作ES的client
+     */
+    @Autowired
     private JestClient jestClient;
-
+    /**
+     * ES中的index 和 type
+     */
     private static final String ES_INDEX = "gmall";
-
     private static final String ES_TYPE = "SkuInfo";
+
+    /**
+     * 热度排名，redis中zset的key
+     */
+    private static final String HOT_SCORE = "hotScore";
+
+    /**
+     * 热度排名，redis中zset的memeber的前缀
+     */
+    private static final String HOT_MEMBER_PREFIX = "skuId:";
+
+    /**
+     * ES中保存热度值基数
+     */
+    private static final Integer ES_HOT_SAVE_BASE_VALUE = 5;
+
 
     /**
      * 保存sku数据到es中
@@ -94,7 +113,7 @@ public class ListServiceImpl implements ListService {
             SkuLsInfo skuLsInfo = hit.source;
             // 将skuName给替换掉
             Map<String, List<String>> highlight = hit.highlight;
-            if (!CollectionUtils.isEmpty(highlight)){
+            if (!CollectionUtils.isEmpty(highlight)) {
                 String skuNameHI = highlight.get("skuName").get(0);
                 skuLsInfo.setSkuName(skuNameHI);
             }
@@ -201,5 +220,42 @@ public class ListServiceImpl implements ListService {
         String query = searchSourceBuilder.toString();
         System.out.println("query es:" + query);
         return query;
+    }
+
+    /**
+     * 保存商品的热度分值
+     *
+     * @param skuId
+     */
+    @Override
+    public void incrHotScore(String skuId) {
+        Jedis jedis = redisUtil.getJedis();
+        // 保存ES，利用原子性，提高并发能力
+        Double hotScore = jedis.zincrby(HOT_SCORE, 1, HOT_MEMBER_PREFIX + skuId);
+        // 点击每5次保存下ES中
+        if (hotScore % ES_HOT_SAVE_BASE_VALUE == 0) {
+            updateHotScore(skuId, Math.round(hotScore));
+        }
+        jedis.close();
+    }
+
+    /**
+     * 更新ES中sku的热度分值
+     *
+     * @param skuId
+     * @param hotScore
+     */
+    private void updateHotScore(String skuId, long hotScore) {
+        String updateStr = "{\n" +
+                "  \"doc\": {\n" +
+                "    \"hotScore\":" + hotScore + "\n" +
+                "  }\n" +
+                "}";
+        try {
+            Update build = new Update.Builder(updateStr).index(ES_INDEX).type(ES_TYPE).id(skuId).build();
+            jestClient.execute(build);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

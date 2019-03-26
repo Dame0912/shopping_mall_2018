@@ -7,8 +7,9 @@ import java.util.List;
 
 public interface UserInfoService {
 
-    List<UserInfo> findAll();
+    // 用户登录
+    public UserInfo login(UserInfo userInfo);
 
     // 根据userId 查询用户地址列表
-    List<UserAddress> getUserAddressList(String userId);
+    public List<UserAddress> getUserAddressList(String userId);
 }
