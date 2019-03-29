@@ -58,24 +58,6 @@ public class SkuManageController {
         return spuSaleAttrList;
     }
 
-//    /**
-//     * 查询销售属性值列表
-//     *
-//     * @param httpServletRequest
-//     * @return
-//     */
-//    @RequestMapping("spuSaleAttrValueList")
-//    @ResponseBody
-//    public List<SpuSaleAttrValue> getSpuSaleAttrValueList(HttpServletRequest httpServletRequest) {
-//        String spuId = httpServletRequest.getParameter("spuId");
-//        String saleAttrId = httpServletRequest.getParameter("saleAttrId");
-//        SpuSaleAttrValue spuSaleAttrValue = new SpuSaleAttrValue();
-//        spuSaleAttrValue.setSpuId(spuId);
-//        spuSaleAttrValue.setSaleAttrId(saleAttrId);
-//        List<SpuSaleAttrValue> spuSaleAttrValueList = manageService.getSpuSaleAttrValueList(spuSaleAttrValue);
-//        return spuSaleAttrValueList;
-//    }
-
     /**
      * 保存 SKu 信息
      * @param skuInfo

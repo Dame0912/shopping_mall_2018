@@ -10,6 +10,7 @@ import com.dame.gmall.usermanage.mapper.UserAddressMapper;
 import com.dame.gmall.usermanage.mapper.UserInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
@@ -50,9 +51,41 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
+    public UserInfo verify(String userId) {
+        Jedis jedis = redisUtil.getJedis();
+        try {
+            // 从redis中检查是否存在
+            String redisKey = USER_INFO_KEY_PREFIX + userId + USER_INFO_KEY_SUFFIX;
+            String userStr = jedis.get(redisKey);
+            if (!StringUtils.isEmpty(userStr)) {
+                //延长时效
+                jedis.expire(redisKey, USER_INFO_KEY_TIMEOUT);
+                UserInfo userInfo = JSON.parseObject(userStr, UserInfo.class);
+                return userInfo;
+            }
+        } finally {
+            jedis.close();
+        }
+        return null;
+    }
+
+    @Override
+    public void logout(String userId) {
+        Jedis jedis = redisUtil.getJedis();
+        try {
+            // 删除用户在redis中的数据
+            String redisKey = USER_INFO_KEY_PREFIX + userId + USER_INFO_KEY_SUFFIX;
+            jedis.del(redisKey);
+        }finally {
+            jedis.close();
+        }
+    }
+
+    @Override
     public List<UserAddress> getUserAddressList(String userId) {
         UserAddress userAddress = new UserAddress();
         userAddress.setUserId(userId);
         return userAddressMapper.select(userAddress);
     }
+
 }
