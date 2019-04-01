@@ -21,7 +21,7 @@ public class AlipayConfig {
     private String app_private_key;
 
     public static final String format = "json";
-    public static final String charset = "GBK";
+    public static final String charset = "utf-8";
     public static final String signType = "RSA2";
 
     public static String alipay_public_key;

@@ -45,7 +45,7 @@ public class PaymentController {
         OrderInfo orderInfo = orderService.getOrderInfo(orderId);
         model.addAttribute("orderId", orderId);
         model.addAttribute("totalAmount", orderInfo.getTotalAmount());
-        return "index";
+        return "paymentIndex";
     }
 
     /**
