@@ -99,7 +99,7 @@ public class OrderInfo implements Serializable {
     private String trackingNo;
 
     /**
-     * 第三方支付编号
+     * 第三方支付编号，自己生成，唯一，保证支付的幂等性
      */
     @Column
     private String outTradeNo;
@@ -110,6 +110,9 @@ public class OrderInfo implements Serializable {
     @Transient
     private String wareId;
 
+    /**
+     * 计算总金额
+     */
     public void sumTotalAmount() {
         BigDecimal totalAmount = new BigDecimal("0");
         for (OrderDetail orderDetail : orderDetailList) {
@@ -117,6 +120,17 @@ public class OrderInfo implements Serializable {
         }
         this.totalAmount = totalAmount;
     }
+
+    /**
+     * 生成订单名称，对应 paymentInfo的 Subject字段
+     * @return
+     */
+    public String getTradeBody() {
+        OrderDetail orderDetail = orderDetailList.get(0);
+        String tradeBody = orderDetail.getSkuName() + "等" + orderDetailList.size() + "件商品";
+        return tradeBody;
+    }
+
 
     public String getId() {
         return id;

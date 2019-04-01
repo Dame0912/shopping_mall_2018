@@ -12,10 +12,10 @@ public class WebConst {
     /**
      * 身份认证地址
      */
-    public static  final  String VERIFY_ADDRESS="http://passport.gmall.com/verify";
+    public static  final  String VERIFY_ADDRESS="http://passport.dame.com/verify";
     /**
      * 用户登录地址
      */
-    public static  final  String LOGIN_ADDRESS="http://passport.gmall.com/index";
+    public static  final  String LOGIN_ADDRESS="http://passport.dame.com/index";
 
 }

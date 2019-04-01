@@ -120,12 +120,14 @@
         <input name="deliveryAddress" id="deliveryAddress" type="hidden"/>
         <input name="paymentWay" id="paymentWay" type="hidden"/>
         <input name="orderComment" id="orderComment" type="hidden"/>
-        <span>
-            <input name="orderDetailList[0].skuId'" type="hidden" value=""/>
-            <input name="orderDetailList[0].skuNum'" type="hidden" value=""/>
-            <input name="orderDetailList[0].orderPrice'" type="hidden" value=""/>
+        <span th:each="orderDetail,stat: ${orderDetailList}">
+            <input th:name="'orderDetailList[' + ${stat.index} + '].skuId'" type="hidden" th:value="${orderDetail.skuId}"/>
+            <input th:name="'orderDetailList[' + ${stat.index} + '].skuNum'" type="hidden" th:value="${orderDetail.skuNum}"/>
+            <input th:name="'orderDetailList[' + ${stat.index} + '].orderPrice'" type="hidden" th:value="${orderDetail.orderPrice}"/>
+            <input th:name="'orderDetailList[' + ${stat.index} + '].skuName'" type="hidden" th:value="${orderDetail.skuName}" />
+            <input th:name="'orderDetailList[' + ${stat.index} + '].imgUrl'" type="hidden" th:value="${orderDetail.imgUrl}" />
         </span>
-        <input name="tradeNo" type="hidden" value=""/>
+        <input name="tradeNo" type="hidden" value="1" th:value="${tradeNo}"/>
     </form>
     <script>
         $(function () {

@@ -1,15 +1,17 @@
 package com.dame.gmall.order.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.dame.gmall.bean.CartInfo;
-import com.dame.gmall.bean.OrderDetail;
-import com.dame.gmall.bean.OrderInfo;
-import com.dame.gmall.bean.UserAddress;
+import com.dame.gmall.bean.*;
+import com.dame.gmall.bean.enums.OrderStatus;
+import com.dame.gmall.bean.enums.ProcessStatus;
 import com.dame.gmall.config.LoginRequire;
 import com.dame.gmall.service.CartInfoService;
+import com.dame.gmall.service.ManageService;
+import com.dame.gmall.service.OrderService;
 import com.dame.gmall.service.UserInfoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -24,6 +26,18 @@ public class OrderController {
     @Reference
     private CartInfoService cartInfoService;
 
+    @Reference
+    private OrderService orderService;
+
+    @Reference
+    private ManageService manageService;
+
+    /**
+     * 订单内容展示
+     *
+     * @param request
+     * @return
+     */
     @LoginRequire
     @RequestMapping("trade")
     public String tradeInit(HttpServletRequest request) {
@@ -50,6 +64,60 @@ public class OrderController {
         orderInfo.setOrderDetailList(orderDetailList);
         orderInfo.sumTotalAmount();
         request.setAttribute("totalAmount", orderInfo.getTotalAmount());
+
+        // 获取tradeNo号
+        String tradeNo = orderService.getTradeNo(userId);
+        request.setAttribute("tradeNo", tradeNo);
         return "trade";
     }
+
+
+    /**
+     * 提交订单，准备支付
+     *
+     * @param orderInfo
+     * @param request
+     * @return
+     */
+    @LoginRequire
+    @RequestMapping(value = "submitOrder", method = RequestMethod.POST)
+    public String submitOrder(OrderInfo orderInfo, HttpServletRequest request) {
+        String userId = (String) request.getAttribute("userId");
+
+        // 判断表单是否重复提交
+        boolean tradeNo = orderService.checkTradeCode(userId, request.getParameter("tradeNo"));
+        if (!tradeNo) {
+            request.setAttribute("errMsg", "该页面已失效，请重新结算!");
+            return "tradeFail";
+        }
+
+        // 验价格，验库存
+        List<OrderDetail> orderDetailList = orderInfo.getOrderDetailList();
+        for (OrderDetail orderDetail : orderDetailList) {
+            // 验价格
+            SkuInfo skuInfo = manageService.getSkuInfo(orderDetail.getSkuId());
+            if (null == skuInfo || (orderDetail.getOrderPrice().compareTo(skuInfo.getPrice())) != 0) {
+                request.setAttribute("errMsg", "商品价格已改变，请重新下单。");
+                return "tradeFail";
+            }
+            // 验库存
+            boolean checkStock = orderService.checkStock(orderDetail.getSkuId(), orderDetail.getSkuNum());
+            if (!checkStock) {
+                request.setAttribute("errMsg", "库存数量不足，请重新下单。");
+                return "tradeFail";
+            }
+        }
+
+        // 初始化参数
+        orderInfo.setOrderStatus(OrderStatus.UNPAID);
+        orderInfo.setProcessStatus(ProcessStatus.UNPAID);
+        orderInfo.sumTotalAmount();
+        orderInfo.setUserId(userId);
+        // 保存
+        String orderId = orderService.saveOrder(orderInfo);
+        // 删除tradeNo，防止重复提交
+        orderService.delTradeCode(userId);
+        return "redirect://payment.gmall.com/index?orderId=" + orderId;
+    }
+
 }
