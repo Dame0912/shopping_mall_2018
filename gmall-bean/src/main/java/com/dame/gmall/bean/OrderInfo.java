@@ -63,7 +63,7 @@ public class OrderInfo implements Serializable {
     private ProcessStatus processStatus;
 
     /**
-     * 订单状态
+     * 订单备注，用户在页面输入的信息
      */
     @Column
     private String orderComment;

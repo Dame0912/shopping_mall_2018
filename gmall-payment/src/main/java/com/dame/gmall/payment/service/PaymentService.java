@@ -9,4 +9,18 @@ public interface PaymentService {
      * @param paymentInfo
      */
     public void savePaymentInfo(PaymentInfo paymentInfo);
+
+    /**
+     * 查询支付信息
+     * @param paymentInfo
+     * @return
+     */
+    public PaymentInfo getPaymentInfo(PaymentInfo paymentInfo);
+
+    /**
+     * 更新支付订单表
+     * @param out_trade_no
+     * @param paymentInfoUpd
+     */
+    public void updatePaymentInfo(String out_trade_no, PaymentInfo paymentInfoUpd);
 }

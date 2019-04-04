@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.dame.gmall.bean.OrderInfo;
 import com.dame.gmall.bean.PaymentInfo;
@@ -17,10 +18,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,6 +73,7 @@ public class PaymentController {
         paymentInfo.setTotalAmount(orderInfo.getTotalAmount());
         paymentInfo.setSubject(orderInfo.getTradeBody());
         paymentInfo.setPaymentStatus(PaymentStatus.UNPAID);
+        paymentInfo.setCreateTime(new Date());
         paymentService.savePaymentInfo(paymentInfo);
 
         // 支付宝参数
@@ -94,6 +98,59 @@ public class PaymentController {
         }
         response.setContentType("text/html;charset=UTF-8");
         return form;
+    }
+
+    /**
+     * 支付宝支付完成，同步回调地址
+     *
+     * @return
+     */
+    @RequestMapping(value = "alipay/callback/return", method = RequestMethod.GET)
+    public String callbackReturn() {
+        return "redirect://" + AlipayConfig.return_order_url;
+    }
+
+    /**
+     * 支付宝支付完成，异步回调处理
+     *
+     * @param paramMap
+     * @param request
+     * @return
+     * @throws AlipayApiException
+     */
+    @RequestMapping(value = "/alipay/callback/notify", method = RequestMethod.POST)
+    @ResponseBody
+    public String paymentNotify(@RequestParam Map<String, String> paramMap, HttpServletRequest request) throws AlipayApiException {
+        // 验签
+        boolean flag = AlipaySignature.rsaCheckV1(paramMap, AlipayConfig.alipay_public_key, AlipayConfig.charset, AlipayConfig.signType);
+        if (!flag) {
+            return "fail";
+        }
+        // 判断结束
+        String trade_status = paramMap.get("trade_status");
+        if ("TRADE_SUCCESS".equals(trade_status) || "TRADE_FINISHED".equals(trade_status)) {//支付成功  交易完结
+            // 查单据是否处理
+            String out_trade_no = paramMap.get("out_trade_no");
+            PaymentInfo paymentInfo = new PaymentInfo();
+            paymentInfo.setOutTradeNo(out_trade_no);
+            PaymentInfo paymentInfoHas = paymentService.getPaymentInfo(paymentInfo);
+
+            if (paymentInfoHas.getPaymentStatus() == PaymentStatus.PAID || paymentInfoHas.getPaymentStatus() == PaymentStatus.ClOSED) {
+                return "fail";
+            } else {
+                // 修改
+                PaymentInfo paymentInfoUpd = new PaymentInfo();
+                // 设置状态
+                paymentInfoUpd.setPaymentStatus(PaymentStatus.PAID);
+                // 设置回调时间
+                paymentInfoUpd.setCallbackTime(new Date());
+                // 设置内容
+                paymentInfoUpd.setCallbackContent(paramMap.toString());
+                paymentService.updatePaymentInfo(out_trade_no, paymentInfoUpd);
+                return "success";
+            }
+        }
+        return "fail";
     }
 
 }

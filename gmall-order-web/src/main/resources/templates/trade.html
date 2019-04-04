@@ -55,8 +55,8 @@
                 <li class=".address default selected" th:each="userAddress:${userAddressList}">
                     <input name="deliveryAddress" type="radio" value="" th:checked="(${userAddress.isDefault} == 1) ? true:false" checked="true">
                     <span th:text="${userAddress.consignee}">收件人AAAA </span>
-                    <span th:text="${userAddress.userAddress}">具体地址111 </span>
                     <span th:text="${userAddress.phoneNum}">具体地址111 </span>
+                    <span th:text="${userAddress.userAddress}">具体地址111 </span>
                 </li>
             </ul>
         </div>
@@ -117,6 +117,7 @@
 
     <form action="./submitOrder" method="post" id="orderForm">
         <input name="consignee" id="consignee" type="hidden"/>
+        <input name="consigneeTel" id="consigneeTel" type="hidden"/>
         <input name="deliveryAddress" id="deliveryAddress" type="hidden"/>
         <input name="paymentWay" id="paymentWay" type="hidden"/>
         <input name="orderComment" id="orderComment" type="hidden"/>
@@ -133,7 +134,8 @@
         $(function () {
             $("#submitButton").click(function () {
                 $("#consignee").val($("input[type='radio']:checked").next().text());
-                $("#deliveryAddress").val($("input[type='radio']:checked").next().next().text());
+                $("#consigneeTel").val($("input[type='radio']:checked").next().next().text());
+                $("#deliveryAddress").val($("input[type='radio']:checked").next().next().next().text());
                 $("#paymentWay").val("ONLINE");
                 $("#orderComment").val($("#orderCommentPage").val());
                 console.log($("#orderForm").html());

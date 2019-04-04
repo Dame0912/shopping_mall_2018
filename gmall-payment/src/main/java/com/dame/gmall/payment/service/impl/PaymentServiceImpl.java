@@ -5,6 +5,7 @@ import com.dame.gmall.payment.mapper.PaymentInfoMapper;
 import com.dame.gmall.payment.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -24,5 +25,17 @@ public class PaymentServiceImpl implements PaymentService {
             return;
         }
         paymentInfoMapper.insertSelective(paymentInfo);
+    }
+
+    @Override
+    public PaymentInfo getPaymentInfo(PaymentInfo paymentInfo) {
+        return paymentInfoMapper.selectOne(paymentInfo);
+    }
+
+    @Override
+    public void updatePaymentInfo(String out_trade_no, PaymentInfo paymentInfoUpd) {
+        Example example = new Example(PaymentInfo.class);
+        example.createCriteria().andEqualTo("out_trade_no", out_trade_no);
+        paymentInfoMapper.updateByExampleSelective(paymentInfoUpd, example);
     }
 }
