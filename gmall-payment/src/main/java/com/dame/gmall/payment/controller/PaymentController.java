@@ -97,6 +97,8 @@ public class PaymentController {
             e.printStackTrace();
         }
         response.setContentType("text/html;charset=UTF-8");
+        // 发送延迟队列，主要查询支付宝，支付结果
+        paymentService.sendDelayPaymentResult(paymentInfo.getOutTradeNo(), 15, 3);
         return form;
     }
 
@@ -147,6 +149,8 @@ public class PaymentController {
                 // 设置内容
                 paymentInfoUpd.setCallbackContent(paramMap.toString());
                 paymentService.updatePaymentInfo(out_trade_no, paymentInfoUpd);
+                // 利用activemq发送给订单系统
+                paymentService.sendPaymentResult(paymentInfo, "success");
                 return "success";
             }
         }

@@ -1,6 +1,8 @@
 package com.dame.gmall.service;
 
 import com.dame.gmall.bean.OrderInfo;
+import com.dame.gmall.bean.enums.OrderStatus;
+import com.dame.gmall.bean.enums.ProcessStatus;
 
 public interface OrderService {
 
@@ -51,4 +53,16 @@ public interface OrderService {
      */
     public OrderInfo getOrderInfo(String orderId);
 
+    /**
+     * 更新订单状态
+     * @param orderId
+     * @param processStatus
+     */
+    public void updateOrderStatus(String orderId, ProcessStatus processStatus);
+
+    /**
+     * 通知库存系统减库存，利用activemq
+     * @param orderId
+     */
+    public void sendOrderStatus(String orderId);
 }

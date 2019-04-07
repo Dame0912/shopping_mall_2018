@@ -1,8 +1,12 @@
 package com.dame.gmall.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.dame.gmall.bean.OrderDetail;
 import com.dame.gmall.bean.OrderInfo;
+import com.dame.gmall.bean.enums.OrderStatus;
+import com.dame.gmall.bean.enums.ProcessStatus;
+import com.dame.gmall.config.ActiveMQUtil;
 import com.dame.gmall.config.RedisUtil;
 import com.dame.gmall.order.mapper.OrderDetailMapper;
 import com.dame.gmall.order.mapper.OrderInfoMapper;
@@ -11,6 +15,8 @@ import com.dame.gmall.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
+import javax.jms.*;
+import javax.jms.Queue;
 import java.util.*;
 
 @Service
@@ -24,6 +30,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+
+    @Autowired
+    private ActiveMQUtil activeMQUtil;
 
     /**
      * 生成结算流水号，防止表单重复提交
@@ -121,6 +130,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 根据orderId获取OrderInfo
+     *
      * @param orderId
      * @return
      */
@@ -134,5 +144,85 @@ public class OrderServiceImpl implements OrderService {
         OrderInfo orderInfo = orderInfoMapper.selectByPrimaryKey(orderId);
         orderInfo.setOrderDetailList(orderDetails);
         return orderInfo;
+    }
+
+    /**
+     * 更新订单状态
+     *
+     * @param orderId
+     * @param processStatus
+     */
+    @Override
+    public void updateOrderStatus(String orderId, ProcessStatus processStatus) {
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setId(orderId);
+        orderInfo.setProcessStatus(processStatus);
+        orderInfo.setOrderStatus(processStatus.getOrderStatus());
+        orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+    }
+
+    /**
+     * 通知库存系统减库存
+     *
+     * @param orderId
+     */
+    @Override
+    public void sendOrderStatus(String orderId) {
+        Connection connection = activeMQUtil.getConnection();
+        String orderJson = initWareOrder(orderId);
+        try {
+            connection.start();
+            // 设置事务
+            Session session = connection.createSession(true, Session.SESSION_TRANSACTED);
+            Queue queue = session.createQueue("ORDER_RESULT_QUEUE");
+            MessageProducer producer = session.createProducer(queue);
+            TextMessage textMessage = session.createTextMessage(orderJson);
+            producer.send(textMessage);
+            // 事务提交
+            session.commit();
+            // 关闭资源
+            producer.close();
+            session.close();
+            connection.close();
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 构建通知库存系统的报文
+     *
+     * @param orderId
+     * @return
+     */
+    private String initWareOrder(String orderId) {
+        OrderInfo orderInfo = getOrderInfo(orderId);
+        Map map = initWareOrder(orderInfo);
+        return JSON.toJSONString(map);
+    }
+
+    private Map initWareOrder(OrderInfo orderInfo) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderId", orderInfo.getId());
+        map.put("consignee", orderInfo.getConsignee());
+        map.put("consigneeTel", orderInfo.getConsigneeTel());
+        map.put("orderComment", orderInfo.getOrderComment());
+        map.put("orderBody", orderInfo.getTradeBody());
+        map.put("deliveryAddress", orderInfo.getDeliveryAddress());
+        map.put("paymentWay", "2");
+        map.put("wareId", orderInfo.getWareId());
+
+        // 组合json
+        List detailList = new ArrayList();
+        List<OrderDetail> orderDetailList = orderInfo.getOrderDetailList();
+        for (OrderDetail orderDetail : orderDetailList) {
+            Map detailMap = new HashMap();
+            detailMap.put("skuId", orderDetail.getSkuId());
+            detailMap.put("skuName", orderDetail.getSkuName());
+            detailMap.put("skuNum", orderDetail.getSkuNum());
+            detailList.add(detailMap);
+        }
+        map.put("details", detailList);
+        return map;
     }
 }
