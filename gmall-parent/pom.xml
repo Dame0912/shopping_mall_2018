@@ -8,6 +8,10 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>../gmall-bean</module>
+        <module>../gmall-interface</module>
+        <module>../gmall-common-util</module>
+        <module>../gmall-service-util</module>
+        <module>../gmall-web-util</module>
     </modules>
     <packaging>pom</packaging>
 
