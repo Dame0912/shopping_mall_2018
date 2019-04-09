@@ -1,6 +1,8 @@
 package com.dame.gmall.bean.enums;
 
 /**
+ * 库存系统的订单状态
+ *
  * @param
  * @return
  */
@@ -11,22 +13,14 @@ public enum TaskStatus {
     DELEVERED("已出库"),
     SPLIT("已拆分");
 
+    private final String comment;
 
-    private String comment;
-
-
-    TaskStatus(String comment) {
+    private TaskStatus(String comment) {
         this.comment = comment;
     }
-
 
     public String getComment() {
         return comment;
     }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
 
 }

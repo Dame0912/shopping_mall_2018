@@ -9,53 +9,66 @@ import java.util.List;
  * sku信息
  */
 public class SkuInfo implements Serializable {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column
     private String id;
 
+    /**
+     * spuId
+     */
     @Column
     private String spuId;
+
     /**
      * 价格
      */
     @Column
     private BigDecimal price;
+
     /**
      * 名称
      */
     @Column
     private String skuName;
+
     /**
      * 重量
      */
     @Column
     private BigDecimal weight;
+
     /**
      * 描述
      */
     @Column
     private String skuDesc;
+
     /**
-     * 三级分类Id
+     * 三级分类id（冗余）
      */
     @Column
     private String catalog3Id;
+
     /**
      * 默认图片
      */
     @Column
     private String skuDefaultImg;
+
     /**
      * sku的图片列表
      */
     @Transient
     private List<SkuImage> skuImageList;
+
     /**
      * sku的平台属性列表
      */
     @Transient
     private List<SkuAttrValue> skuAttrValueList;
+
     /**
      * sku的销售属性列表
      */

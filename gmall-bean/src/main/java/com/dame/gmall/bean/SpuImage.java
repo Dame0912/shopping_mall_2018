@@ -4,15 +4,30 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * spu商品图片表
+ */
 public class SpuImage implements Serializable {
 
     @Column
     @Id
     private String id;
+
+    /**
+     * spuId
+     */
     @Column
     private String spuId;
+
+    /**
+     * 图片名称
+     */
     @Column
     private String imgName;
+
+    /**
+     * 图片路径
+     */
     @Column
     private String imgUrl;
 

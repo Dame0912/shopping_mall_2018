@@ -11,28 +11,38 @@ import java.util.Map;
  * spu的销售属性信息
  */
 public class SpuSaleAttr implements Serializable {
+
     @Id
     @Column
     private String id;
 
+    /**
+     * spuId
+     */
     @Column
     private String spuId;
+
     /**
-     * Base销售属性
+     * base销售属性Id
      */
     @Column
     private String saleAttrId;
+
     /**
-     * Base销售属性名称
+     * base销售属性名称，例如：颜色，版本，型号等
      */
     @Column
-    private String saleAttrName;//例如：颜色，版本，型号等
+    private String saleAttrName;
+
     /**
      * spu销售属性值列表
      */
     @Transient
     private List<SpuSaleAttrValue> spuSaleAttrValueList;
 
+    /**
+     * spu销售属性值JSON格式
+     */
     @Transient
     private Map spuSaleAttrValueJson;
 

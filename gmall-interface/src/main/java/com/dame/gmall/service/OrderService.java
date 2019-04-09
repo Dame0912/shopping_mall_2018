@@ -1,8 +1,10 @@
 package com.dame.gmall.service;
 
 import com.dame.gmall.bean.OrderInfo;
-import com.dame.gmall.bean.enums.OrderStatus;
 import com.dame.gmall.bean.enums.ProcessStatus;
+
+import java.util.List;
+import java.util.Map;
 
 public interface OrderService {
 
@@ -32,6 +34,7 @@ public interface OrderService {
 
     /**
      * 验证库存
+     *
      * @param skuId
      * @param skuNum
      * @return
@@ -48,6 +51,7 @@ public interface OrderService {
 
     /**
      * 根据 orderId 获取 OrderInfo
+     *
      * @param orderId
      * @return
      */
@@ -55,6 +59,7 @@ public interface OrderService {
 
     /**
      * 更新订单状态
+     *
      * @param orderId
      * @param processStatus
      */
@@ -62,7 +67,39 @@ public interface OrderService {
 
     /**
      * 通知库存系统减库存，利用activemq
+     *
      * @param orderId
      */
     public void sendOrderStatus(String orderId);
+
+    /**
+     * 查询过期订单。依据订单过期时间和订单状态为未支付状态。
+     *
+     * @return
+     */
+    public List<OrderInfo> getExpiredOrderList();
+
+    /**
+     * 处理未支付的超期订单
+     *
+     * @param orderInfo
+     */
+    public void execExpiredOrder(OrderInfo orderInfo);
+
+    /**
+     * 拆单接口，根据仓库的地址不同，进行的拆单
+     *
+     * @param orderId
+     * @param wareSkuMap
+     * @return
+     */
+    public List<OrderInfo> splitOrder(String orderId, String wareSkuMap);
+
+    /**
+     * 构建返回给库存系统的拆单结果
+     *
+     * @param orderInfo
+     * @return
+     */
+    public Map initWareOrder(OrderInfo orderInfo);
 }

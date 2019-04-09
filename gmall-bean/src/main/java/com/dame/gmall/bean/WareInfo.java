@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
+ * 库存信息
+ *
  * @param
  * @return
  */
@@ -16,12 +18,21 @@ public class WareInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
+    /**
+     * 仓库名称
+     */
     @Column
     private String name;
 
+    /**
+     * 仓库地址
+     */
     @Column
     private String address;
 
+    /**
+     * 区域编号
+     */
     @Column
     private String areacode;
 

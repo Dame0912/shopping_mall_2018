@@ -1,7 +1,7 @@
 package com.dame.gmall.payment.mq;
 
 import com.dame.gmall.bean.PaymentInfo;
-import com.dame.gmall.payment.service.PaymentService;
+import com.dame.gmall.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;

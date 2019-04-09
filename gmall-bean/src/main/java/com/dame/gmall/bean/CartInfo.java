@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+/**
+ * 购物车
+ */
 public class CartInfo implements Serializable {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,29 +14,51 @@ public class CartInfo implements Serializable {
     @Column
     private String id;
 
+    /**
+     * 用户id
+     */
     @Column
     private String userId;
 
+    /**
+     * skuid
+     */
     @Column
     private String skuId;
 
+    /**
+     * 放入购物车时价格（结账的时候的sku价格，可能和这个价格不同）
+     */
     @Column
     private BigDecimal cartPrice;
-    // 数量
+
+    /**
+     * 数量
+     */
     @Column
     private Integer skuNum;
 
+    /**
+     * 图片路径
+     */
     @Column
     private String imgUrl;
 
+    /**
+     * sku名称（冗余）
+     */
     @Column
     private String skuName;
 
-    // 实时价格
+    /**
+     * 实时价格
+     */
     @Transient
     private BigDecimal skuPrice;
 
-    // 下订单的时候，商品是否勾选
+    /**
+     * 下订单的时候，商品是否勾选
+     */
     @Transient
     private String isChecked = "0";
 

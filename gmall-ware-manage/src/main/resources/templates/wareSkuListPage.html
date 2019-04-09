@@ -9,21 +9,19 @@
     <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css">
     <link rel="stylesheet" type="text/css"  href="/easyui/themes/default/easyui.css">
 </head>
+
 <body >
 <div class="easyui-panel" title=""  data-options="border:true">
-
-
-    <table id="dg" class="easyui-datagrid" title="库存单元列表"
-           data-options="singleSelect:true,method:'get',url:'wareSkuList' ,toolbar:'#tb'">
+    <table id="dg" class="easyui-datagrid" title="库存单元列表" data-options="singleSelect:true,method:'get',url:'wareSkuList' ,toolbar:'#tb'">
         <thead>
-        <tr>
-            <th data-options="field:'id'" width="5%">id </th>
-            <th data-options="field:'stockName'" width="30%">库存单元名称</th>
-            <th data-options="field:'stock'" width="10%">实际库存数量</th>
-            <th data-options="field:'stockLocked'" width="10%">锁定库存数量</th>
-            <th data-options="field:'skuId'" width="10%">外部skuId </th>
-            <th data-options="field:'warehouseName'" width="20%">仓库</th>
-          </tr>
+            <tr>
+                <th data-options="field:'id'" width="5%">id </th>
+                <th data-options="field:'stockName'" width="30%">库存单元名称</th>
+                <th data-options="field:'stock'" width="10%">实际库存数量</th>
+                <th data-options="field:'stockLocked'" width="10%">锁定库存数量</th>
+                <th data-options="field:'skuId'" width="10%">外部skuId </th>
+                <th data-options="field:'warehouseName'" width="20%">仓库</th>
+            </tr>
         </thead>
     </table>
     <div id="tb" style="padding:5px;height:auto">
@@ -32,34 +30,33 @@
             <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editWareSku()">编辑</a>
             <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
         </div>
-        <div>
-
-
-
-        </div>
     </div>
 </div>
 
-<div id="dlg" class="easyui-dialog" title="库存单元" style="width:260px;height:350px;"
-    closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:false" buttons="#bb" >
-
+<div id="dlg" class="easyui-dialog" title="库存单元" style="width:260px;height:350px;" closed="true" data-options="iconCls:'icon-save',resizable:true,modal:false" buttons="#bb" >
     <form id="wareSkuForm">
         <br/>
         <label>库存单元名称:</label><br/>
-        <div style=" text-align: center"> <input  id="stockName" name="stockName" class="easyui-textbox" data-options="" style="left:40px;width:200px"/></div>
+        <div style=" text-align: center">
+            <input id="stockName" name="stockName" class="easyui-textbox" data-options="" style="left:40px;width:200px"/>
+        </div>
         <br/>
         <label>库存数量:</label><br/>
-        <div style=" text-align: center"> <input  id="stock" name="stockName" class="easyui-textbox" data-options="" style="width:200px"/></div>
+        <div style=" text-align: center">
+            <input id="stock" name="stockName" class="easyui-textbox" data-options="" style="width:200px"/>
+        </div>
         <br/>
         <label>外部skuId:</label><br/>
-            <div style=" text-align: center"> <input  id="skuId" name="skuId" class="easyui-textbox" data-options="" style="width:200px"/></div>
+        <div style=" text-align: center">
+            <input  id="skuId" name="skuId" class="easyui-textbox" data-options="" style="width:200px"/>
+        </div>
         <br/>
         <label>仓库:</label><br/>
-                <div style=" text-align: center"><select name="warehouse" id="warehouseId"  class="easyui-combobox" data-options="valueField:'id',textField:'name',method:'get',url:'wareInfoList'" style="width:200px">  </select></div>
-
-
+        <div style=" text-align: center">
+            <select name="warehouse" id="warehouseId" class="easyui-combobox" data-options="valueField:'id',textField:'name',method:'get',url:'wareInfoList'" style="width:200px">
+            </select>
+        </div>
     </form>
-
 </div>
 
 <div id="bb">
@@ -72,7 +69,7 @@
     /*<![CDATA[*/
     function saveWareSku(){
         var formJson ={} ;
-        //把表格中的数据循环组合成json
+        //把表格中的数据组合成json
         formJson['warehouseId']=$('#warehouseId').combobox("getValue");
         formJson["stock"]=$("#stock").val();
         formJson["stockName"]=$("#stockName").val();
@@ -85,11 +82,7 @@
         });
     }
 
-
-
-
     function addWareSku(){
-
         //弹出框
         $("#dlg").dialog("open");
         //进系统前先清空
@@ -97,17 +90,8 @@
         $("#stockName").textbox('clear');
         $("#skuId").textbox('clear');
         $('#warehouseId').combobox('reset');
-
     }
 
-
-
-
-
-
-
-
-    /*]]>*/
 </script>
 
 </html>

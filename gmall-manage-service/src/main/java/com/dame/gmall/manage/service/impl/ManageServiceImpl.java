@@ -7,7 +7,6 @@ import com.dame.gmall.config.RedisUtil;
 import com.dame.gmall.manage.constant.ManageConst;
 import com.dame.gmall.manage.mapper.*;
 import com.dame.gmall.service.ManageService;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -254,6 +253,12 @@ public class ManageServiceImpl implements ManageService {
         }
     }
 
+    /**
+     * 根据skuId获取SkuInfo信息
+     *
+     * @param skuId
+     * @return
+     */
     @Override
     public SkuInfo getSkuInfo(String skuId) {
         SkuInfo skuInfo = null;
@@ -299,10 +304,16 @@ public class ManageServiceImpl implements ManageService {
         return getSkuInfoDB(skuId);
     }
 
+    /**
+     * 根据skuId，从数据库中获取SkuInfo信息
+     *
+     * @param skuId
+     * @return
+     */
     public SkuInfo getSkuInfoDB(String skuId) {
-        // 单纯的信息
+        // sku信息
         SkuInfo skuInfo = skuInfoMapper.selectByPrimaryKey(skuId);
-        // 图片
+        // 图片信息
         SkuImage skuImage = new SkuImage();
         skuImage.setSkuId(skuId);
         List<SkuImage> skuImageList = skuImageMapper.select(skuImage);
@@ -320,6 +331,12 @@ public class ManageServiceImpl implements ManageService {
         return skuInfo;
     }
 
+    /**
+     * 根据该sku获取到spu销售属性的信息，如果spu中包含一个isChecked字段，sku中有该属性，则ischecked = 1
+     *
+     * @param skuInfo
+     * @return
+     */
     @Override
     public List<SpuSaleAttr> selectSpuSaleAttrListCheckBySku(SkuInfo skuInfo) {
         List<SpuSaleAttr> spuSaleAttrList = spuSaleAttrMapper.selectSpuSaleAttrListCheckBySku(Long.parseLong(skuInfo.getId()), Long.parseLong(skuInfo.getSpuId()));

@@ -10,8 +10,6 @@ import java.util.List;
  */
 public interface WareInfoMapper extends Mapper<WareInfo> {
 
-
     public List<WareInfo> selectWareInfoBySkuid(String skuid);
-
 
 }

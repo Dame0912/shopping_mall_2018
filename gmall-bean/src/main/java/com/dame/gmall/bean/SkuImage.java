@@ -5,20 +5,38 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
- * Sku图片
+ * Sku图片信息，其图片信息来源于spu
  */
 public class SkuImage implements Serializable {
+
     @Id
     @Column
     private String id;
+
+    /**
+     * skuId
+     */
     @Column
     private String skuId;
+
+    /**
+     * 图片名称（冗余）
+     */
     @Column
     private String imgName;
+
+    /**
+     * 图片路径(冗余)
+     */
     @Column
     private String imgUrl;
+
+    /**
+     * Spu商品图片Id
+     */
     @Column
     private String spuImgId;
+
     /**
      * 是否是默认图片
      */

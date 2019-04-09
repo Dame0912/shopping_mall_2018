@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ import java.util.Map;
 public class GwareController {
 
     @Autowired
-    GwareService gwareService;
+    private GwareService gwareService;
 
     @RequestMapping("index")
     public String index() {
@@ -42,13 +41,19 @@ public class GwareController {
         return "wareSkuListPage";
     }
 
-    //根据sku判断是否有库存
+    /**
+     * 判断是否有库存，订单系统在提交支付时调用.
+     * ResponseEntity<String> 和 返回 String 是一样的
+     *
+     * @param reqMap
+     * @return
+     */
     @RequestMapping("hasStock")
     @ResponseBody
-    public ResponseEntity<String> hasStock(@RequestParam Map<String, String> hashMap) {
-        String numstr = (String) hashMap.get("num");
+    public ResponseEntity<String> hasStock(@RequestParam Map<String, String> reqMap) {
+        String numstr = reqMap.get("num");
         Integer num = Integer.parseInt(numstr);
-        String skuid = (String) hashMap.get("skuId");
+        String skuid = reqMap.get("skuId");
         boolean hasStock = gwareService.hasStockBySkuId(skuid, num);
         if (hasStock) {
             return ResponseEntity.ok("1");
@@ -57,7 +62,12 @@ public class GwareController {
     }
 
 
-    //根据skuid 返回 仓库
+    /**
+     * 根据skuid 返回 仓库信息
+     *
+     * @param skuid
+     * @return
+     */
     @RequestMapping(value = "skuWareInfo")
     @ResponseBody
     public ResponseEntity<String> getWareInfoBySkuid(String skuid) {
@@ -69,24 +79,12 @@ public class GwareController {
         return ResponseEntity.ok(jsonString);
     }
 
-
-    @RequestMapping(value = "wareInfo")
-    @ResponseBody
-    public void addWareInfo() {
-        gwareService.addWareInfo();
-    }
-
-    //根据skuid 返回 仓库
-    @RequestMapping(value = "wareSkuMap")
-    @ResponseBody
-    public ResponseEntity<String> getWareSkuMap(@RequestParam("skuid") List<String> skuidsList) {
-        // List<String> skuidsList = JSON.parseArray(skuids, String.class) ;
-        Map<String, List<String>> wareSkuMap = gwareService.getWareSkuMap(skuidsList);
-        String jsonString = JSON.toJSONString(wareSkuMap);
-        return ResponseEntity.ok(jsonString);
-    }
-
-
+    /**
+     * 保存sku的库存明细
+     *
+     * @param wareSku
+     * @return
+     */
     @RequestMapping(value = "saveWareSku", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Void> addWareSku(WareSku wareSku) {
@@ -94,24 +92,32 @@ public class GwareController {
         return ResponseEntity.ok().build();
     }
 
-
+    /**
+     * 获取所有sku的库存信息
+     *
+     * @param response
+     * @return
+     */
     @RequestMapping(value = "wareSkuList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public List<WareSku> getWareSkuList(HttpServletResponse response) {
-        List<WareSku> wareSkuList = gwareService.getWareSkuList();
-        return wareSkuList;
+    public List<WareSku> getWareSkuList() {
+        return gwareService.getWareSkuList();
     }
 
+    /**
+     * 获取所有的仓库信息
+     *
+     * @return
+     */
     @RequestMapping(value = "wareInfoList", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public List<WareInfo> getWareInfoList() {
-        List<WareInfo> wareInfoList = gwareService.getWareInfoList();
-        return wareInfoList;
+        return gwareService.getWareInfoList();
     }
 
 
     /***
-     * 出库
+     * 订单出库
      * @param httpServletRequest
      * @return
      */
@@ -119,7 +125,7 @@ public class GwareController {
     @ResponseBody
     public ResponseEntity<Void> deliveryStock(HttpServletRequest httpServletRequest) {
         String id = httpServletRequest.getParameter("id");
-        String trackingNo = httpServletRequest.getParameter("trackingNo");
+        String trackingNo = httpServletRequest.getParameter("trackingNo");//物流单号
         WareOrderTask wareOrderTask = new WareOrderTask();
         wareOrderTask.setId(id);
         wareOrderTask.setTrackingNo(trackingNo);
@@ -127,10 +133,14 @@ public class GwareController {
         return ResponseEntity.ok().build();
     }
 
-
+    /**
+     * 查询所有的 WareOrderTask
+     *
+     * @return
+     */
     @RequestMapping(value = "taskList", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<String> getWareOrderTaskList(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<String> getWareOrderTaskList() {
         List<WareOrderTask> wareOrderTaskList = gwareService.getWareOrderTaskList(null);
         SerializeConfig config = new SerializeConfig();
         config.configEnumAsJavaBean(TaskStatus.class);

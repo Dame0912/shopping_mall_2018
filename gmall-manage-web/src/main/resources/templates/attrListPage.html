@@ -6,75 +6,77 @@
 </head>
 <body>
 
-<table id="dg" class="easyui-datagrid" title="属性列表"
-       data-options="singleSelect:true,method:'get',toolbar:'#tb'">
-    <thead>
-        <tr>
-            <th data-options="field:'id'" width="20%">属性id </th>
-            <th data-options="field:'attrName'" width="80%">属性名</th>
-        </tr>
-    </thead>
-</table>
+    <table id="dg" class="easyui-datagrid" title="属性列表"
+           data-options="singleSelect:true,method:'get',toolbar:'#tb'">
+        <thead>
+            <tr>
+                <th data-options="field:'id'" width="20%">属性id </th>
+                <th data-options="field:'attrName'" width="80%">属性名</th>
+            </tr>
+        </thead>
+    </table>
 
-<div id="tb" style="padding:5px;height:auto">
-    <div style="margin-bottom:5px">
-        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addAttrInfo()">添加</a>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editAttrInfo()">编辑</a>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+    <div id="tb" style="padding:5px;height:auto">
+        <div style="margin-bottom:5px">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addAttrInfo()">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editAttrInfo()">编辑</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true">删除</a>
+        </div>
+        <div>
+            一级分类：
+            <select id="ctg1ForAttrList" class="easyui-combobox" style="width:100px"
+                data-options="valueField:'id',textField:'name',url:'getCatalog1',
+                onSelect:function(rec){
+                    $('#ctg2ForAttrList').combobox('clear');
+                    $('#ctg3ForAttrList').combobox('clear');
+                    $('#ctg2ForAttrList').combobox('reload','getCatalog2?catalog1Id='+rec.id);
+                }
+            "></select>
+            二级分类：
+            <select name="ctg2ForAttrList" id="ctg2ForAttrList" class="easyui-combobox" style="width:100px"
+                data-options="valueField:'id',textField:'name',
+                onSelect:function(rec){
+                    $('#ctg3ForAttrList').combobox('clear');
+                    $('#ctg3ForAttrList').combobox('reload','getCatalog3?catalog2Id='+rec.id);
+                }"
+            ></select>
+            三级分类：
+            <select name="ctg3ForAttrList" id="ctg3ForAttrList" class="easyui-combobox" style="width:100px"
+                data-options="valueField:'id',textField:'name'"></select>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="javascript:reloadAttrList()">刷新属性列表</a>
+        </div>
     </div>
-    <div>
-        一级分类：
-        <select id="ctg1ForAttrList"  class="easyui-combobox" style="width:100px"
-            data-options="valueField:'id',textField:'name',url:'getCatalog1',
-            onSelect:function(rec){
-                $('#ctg2ForAttrList').combobox('clear');
-                $('#ctg3ForAttrList').combobox('clear');
-                $('#ctg2ForAttrList').combobox('reload','getCatalog2?catalog1Id='+rec.id);
-            }
-        "></select>
-        二级分类：
-        <select name="ctg2ForAttrList" id="ctg2ForAttrList"  class="easyui-combobox" style="width:100px"
-            data-options="valueField:'id',textField:'name',
-            onSelect:function(rec){
-                $('#ctg3ForAttrList').combobox('clear');
-                $('#ctg3ForAttrList').combobox('reload','getCatalog3?catalog2Id='+rec.id);
-            }"
-        ></select>
-        三级分类：
-        <select name="ctg3ForAttrList" id="ctg3ForAttrList"  class="easyui-combobox" style="width:100px"
-            data-options="valueField:'id',textField:'name'"></select>
-        <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="javascript:reloadAttrList()">刷新属性列表</a>
+
+    <div id="dlg" class="easyui-dialog" title="编辑属性" style="width:600px;height:500px;"
+         closed="true" data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#bb" >
+        <form id="attrForm">
+            <br/>
+            <label>属性名称:</label>
+            <input id="attrName" name="attrName" class="easyui-textbox" data-options="" style="width:100px"/>
+            <input id="attrId" name="attrId" type="hidden"  />
+            <br/><br/>
+            <table id="dg_av" class="easyui-datagrid" title="属性值列表"></table>
+        </form>
     </div>
-</div>
 
-<div id="dlg" class="easyui-dialog" title="编辑属性" style="width:600px;height:500px;"
-     closed="true"  data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#bb" >
-    <form id="attrForm">
-        <br/>
-        <label>属性名称:</label>
-        <input  id="attrName" name="attrName" class="easyui-textbox" data-options="" style="width:100px"/>
-        <input  id="attrId" name="attrId" type="hidden"  />
-        <br/><br/>
-        <table id="dg_av" class="easyui-datagrid" title="属性值列表"></table>
-    </form>
-</div>
-
-<div id="bb">
-    <a href="#" class="easyui-linkbutton" onclick="saveAttr()">保存</a>
-    <a href="#" class="easyui-linkbutton" onclick="javascript:$('#dlg').dialog('close')">关闭</a>
-</div>
+    <div id="bb">
+        <a href="#" class="easyui-linkbutton" onclick="saveAttr()">保存</a>
+        <a href="#" class="easyui-linkbutton" onclick="javascript:$('#dlg').dialog('close')">关闭</a>
+    </div>
 
 </body>
 
 <script type="application/javascript">
 
     function addAttrInfo(){
+        // 判断是否选择了3级分类ID
         if(!checkBeforeDialog()){
             return ;
         }
+        // 打开关闭的弹出框
         $("#dlg").dialog("open");
 
-        //进系统前先清空
+        // 进系统前先清空
         $("#attrId").val("");
         $("#attrName").textbox('clear');
         $('#dg_av').datagrid({url:''});

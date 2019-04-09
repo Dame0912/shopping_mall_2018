@@ -20,7 +20,8 @@
         <dubbo-starter.version>1.0.10</dubbo-starter.version>
         <dubbo.version>2.6.0</dubbo.version>
         <zkclient.version>0.10</zkclient.version>
-        <!-- thymeleaf 开始 -->
+        <!-- thymeleaf 开始。 springboot默认使用themeleaf渲染，而这种模板语言对html的标签约束非常严格，
+        所有标签必须有开有闭。解决页面松校验的方式：添加下面三个依赖即可 -->
         <nekohtml.version>1.9.20</nekohtml.version>
         <xml-apis.version>1.4.01</xml-apis.version>
         <batik-ext.version>1.9.1</batik-ext.version>

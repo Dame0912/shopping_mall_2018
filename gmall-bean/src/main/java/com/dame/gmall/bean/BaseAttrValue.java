@@ -13,16 +13,19 @@ public class BaseAttrValue implements Serializable {
     @Id
     @Column
     private String id;
+
     /**
-     * 平台属性值名称
+     * 平台属性值名称（如：8G内存）
      */
     @Column
     private String valueName;
+
     /**
      * 平台属性Id
      */
     @Column
     private String attrId;
+
     /**
      * 平台属性展示时候，点击平台属性使用
      */

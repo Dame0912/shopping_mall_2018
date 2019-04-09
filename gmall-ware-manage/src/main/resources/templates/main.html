@@ -11,8 +11,7 @@
 <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="easyui/easyloader.js"></script>
 <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
-<link rel="stylesheet" type="text/css"
-	href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
 
 </head>
 <body class="easyui-layout">
@@ -27,7 +26,6 @@
 		<center>
 			<h1 style="color: red">南水北调</h1>
 		</center>
-
 	</div>
 	<div
 		data-options="region:'east',iconCls:'icon-reload',title:'东部都是有钱人',split:true"
@@ -41,7 +39,7 @@
 		<ul id="tt" class="easyui-tree">
 			<li><span>工作单管理</span>
 				<ul>
-				<!-- data-options:定义控件的树形 
+				<!-- data-options:定义控件的树形
 					data-options="attributes:{key:'value'}"
 					对应下面取值的时候，取key
 				-->
@@ -53,54 +51,54 @@
 				<ul>
 					<li>系统设置</li>
 					<li>日志管理</li>
-				</ul></li>
+				</ul>
+            </li>
 		</ul>
 	</div>
 	<div data-options="region:'center',title:'中部崛起'"
 		style="padding: 5px; background: #eee;">
 		<div id="tab" class="easyui-tabs"
 			style="width: 500px; height: 450px;">
-			<div title="Tab1" style="padding: 20px; display: none;">tab1
+			<div title="Tab1" style="padding: 20px; display: none;">
+                tab1
 			</div>
-			<div title="Tab2" data-options="closable:true"
-				style="overflow: auto; padding: 20px; display: none;">tab2</div>
-			<div title="Tab3"
-				data-options="iconCls:'icon-reload',closable:true"
-				style="padding: 20px; display: none;">tab3</div>
+			<div title="Tab2" data-options="closable:true" style="overflow: auto; padding: 20px; display: none;">
+                tab2
+            </div>
+			<div title="Tab3" data-options="iconCls:'icon-reload',closable:true" style="padding: 20px; display: none;">
+                tab3
+            </div>
 		</div>
 	</div>
-</body>	
+</body>
+
 <script type="text/javascript">
 	$(function(){
-		/*#tt取得到tree控件  
+		/*#tt取得到tree控件
 		node:节点
 		*/
 		$('#tt').tree({
 			/* node节点 */
 			onClick: function(node){
 				//alert(node.text);  // 在用户点击的时候提示
-				$('#tab').tabs('add',{    
-				    title:node.text, 
-				    /* 将内容替换成一个jsp、页面 
+				$('#tab').tabs('add',{
+				    title:node.text,
+				    /* 将内容替换成一个jsp、页面
 				                使用iframe 内嵌框架。 src 引用jsp即可！
 				      当点击左侧树形控件的时候，将该node.attributes.url传递过来！
 				    */
 				    content:"<iframe src='"+node.attributes.url+"' style='border:0;width:100%;height:100%'>",
-				    closable:true,    
-				    tools:[{    
-				        iconCls:'icon-mini-refresh',    
-				        handler:function(){    
-				            alert('refresh');    
-				        }    
-				    }]    
-				}); 
-				
+				    closable:true,
+				    tools:[{
+				        iconCls:'icon-mini-refresh',
+				        handler:function(){
+				            alert('refresh');
+				        }
+				    }]
+				});
 			}
 		});
-
-
 	})
 </script>
-
 
 </html>

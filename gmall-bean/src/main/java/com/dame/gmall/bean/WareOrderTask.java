@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * 库存工作单
+ *
  * @param
  * @return
  */
@@ -19,43 +21,82 @@ public class WareOrderTask {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
+    /**
+     * 订单编号
+     */
     @Column
     private String orderId;
 
+    /**
+     * 收货人
+     */
     @Column
     private String consignee;
 
+    /**
+     * 收货人电话
+     */
     @Column
     private String consigneeTel;
 
+    /**
+     * 送货地址
+     */
     @Column
     private String deliveryAddress;
 
+    /**
+     * 订单备注
+     */
     @Column
     private String orderComment;
 
+    /**
+     * 付款方式，1:在线付款 2:货到付款
+     */
     @Column
     private String paymentWay;
 
+    /**
+     * 工作单状态。已付款；已减库存；已付款,库存超卖；已出库；已拆分
+     */
     @Column
     @ColumnType(jdbcType = JdbcType.VARCHAR)
     private TaskStatus taskStatus;
 
+    /**
+     * 订单描述
+     */
     @Column
     private String orderBody;
 
+    /**
+     * 物流单号
+     */
     @Column
     private String trackingNo;
 
+    /**
+     * 创建时间
+     */
     @Column
     private Date createTime;
 
+    /**
+     * 仓库编号
+     */
     @Column
     private String wareId;
 
+    /**
+     * 工作单备注
+     */
     @Column
     private String taskComment;
 
+    /**
+     * 库存工作单明细
+     */
     @Transient
     private List<WareOrderTaskDetail> details;
 

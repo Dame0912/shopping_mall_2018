@@ -27,6 +27,12 @@ public class SpuManageController {
         return "spuListPage";
     }
 
+    /**
+     * 根据 三级分类ID 查询 spuList
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping("spuList")
     @ResponseBody
     public List<SpuInfo> spuList(HttpServletRequest request) {
@@ -36,12 +42,23 @@ public class SpuManageController {
         return manageService.getSpuInfoList(spuInfo);
     }
 
+    /**
+     * 获取销售属性列表，字典表
+     *
+     * @return
+     */
     @RequestMapping("baseSaleAttrList")
     @ResponseBody
     public List<BaseSaleAttr> getBaseSaleAttrList() {
         return manageService.getBaseSaleAttrList();
     }
 
+    /**
+     * 保存SpuInfo信息
+     *
+     * @param spuInfo
+     * @return
+     */
     @RequestMapping("saveSpuInfo")
     @ResponseBody
     public Map saveSpuInfo(SpuInfo spuInfo) {
@@ -54,7 +71,5 @@ public class SpuManageController {
         }
         return map;
     }
-
-
 
 }

@@ -3,6 +3,9 @@ package com.dame.gmall.bean;
 import javax.persistence.*;
 
 /**
+ * sku库存明细
+ * sku与仓库关联表
+ *
  * @param
  * @return
  */
@@ -13,21 +16,39 @@ public class WareSku {
     @Id
     private String id;
 
+    /**
+     * skuId
+     */
     @Column
     private String skuId;
 
+    /**
+     * 仓库id
+     */
     @Column
     private String warehouseId;
 
+    /**
+     * 库存数
+     */
     @Column
     private Integer stock = 0;
 
+    /**
+     * 存货名称
+     */
     @Column
     private String stockName;
 
+    /**
+     * 锁定库存数
+     */
     @Column
     private Integer stockLocked;
 
+    /**
+     * 仓库名称
+     */
     @Transient
     private String warehouseName;
 

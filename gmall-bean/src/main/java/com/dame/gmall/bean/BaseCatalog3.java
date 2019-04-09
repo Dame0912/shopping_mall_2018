@@ -12,8 +12,16 @@ public class BaseCatalog3 implements Serializable {
     @Id
     @Column
     private String id;
+
+    /**
+     * 名称
+     */
     @Column
     private String name;
+
+    /**
+     * 二级分类id
+     */
     @Column
     private String catalog2Id;
 

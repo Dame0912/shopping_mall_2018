@@ -12,6 +12,10 @@ public class BaseCatalog1 implements Serializable {
     @Id
     @Column
     private String id;
+
+    /**
+     * 名称
+     */
     @Column
     private String name;
 

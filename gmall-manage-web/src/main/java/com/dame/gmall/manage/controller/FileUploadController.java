@@ -18,8 +18,11 @@ import java.io.IOException;
 @RestController
 public class FileUploadController {
 
+    /**
+     * 该URL，供下面文件上传完成后拼接文件访问URL使用，外部访问fdfs资源要以http开头
+     */
     @Value("${fileServer.url}")
-    String fileUrl;
+    private String fileUrl;
 
 
     @RequestMapping(value = "fileUpload", method = RequestMethod.POST)
@@ -32,9 +35,11 @@ public class FileUploadController {
             TrackerServer trackerServer = trackerClient.getConnection();
             StorageClient storageClient = new StorageClient(trackerServer, null);
             String filename = file.getOriginalFilename();
-            String extName = StringUtils.substringAfterLast(filename, ".");
+            String extName = StringUtils.substringAfterLast(filename, ".");// .jpg
             //上传文件
             String[] upload_file = storageClient.upload_file(file.getBytes(), extName, null);
+
+            // 拼装资源访问路径，返回
             for (String path : upload_file) {
                 sb.append("/").append(path);
             }
