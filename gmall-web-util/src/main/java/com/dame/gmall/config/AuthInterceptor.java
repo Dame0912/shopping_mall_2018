@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 import java.util.Map;
 
 /**
- * 身份认证的拦截器
+ * 身份认证及存取cookie的拦截器
  */
 @Component
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -46,6 +46,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         LoginRequire loginRequire = handlerMethod.getMethodAnnotation(LoginRequire.class);
         if (null != loginRequire) {
             String ipAddr = request.getHeader("X-forwarded-for");
+            // 请求认证中心认证
             String verify = HttpClientUtil.doGet(WebConst.VERIFY_ADDRESS + "?passToken=" + passToken + "&currentIp=" + ipAddr);
             if ("success".equals(verify)) {
                 Map map = getUserMapByToken(passToken);

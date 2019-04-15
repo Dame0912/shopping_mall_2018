@@ -178,10 +178,10 @@ public class GwareServiceImpl implements GwareService {
             wareSku.setWarehouseId(wareOrderTaskQuery.getWareId());
             wareSku.setSkuId(detail.getSkuId());
             wareSku.setStock(detail.getSkuNum());
+            // UPDATE ware_sku SET stock_locked = stock_locked - #{stock},
+            // stock = stock - #{stock} WHERE sku_id = #{skuId} and warehouse_id = #{warehouseId}
             wareSkuMapper.deliveryStock(wareSku);
         }
-
-        wareOrderTaskQuery.setTaskStatus(TaskStatus.DELEVERED);
         wareOrderTaskQuery.setTrackingNo(trackingNo);
         wareOrderTaskMapper.updateByPrimaryKeySelective(wareOrderTaskQuery);
         try {
@@ -323,6 +323,8 @@ public class GwareServiceImpl implements GwareService {
             wareSku.setSkuId(wareOrderTaskDetail.getSkuId());
             // 查询可用库存，加行级写锁，注意索引避免表锁
             // 行锁变表锁：索引失效导致，比如：where i = '1',但是i是数字类型的，此时用的string，导致索引失效，行锁变表锁
+            // select stock - IFNULL(stock_locked,0) as available_stock
+            // from ware_sku where sku_id=#{skuId} and warehouse_id=#{warehouseId} for update
             int availableStock = wareSkuMapper.selectStockBySkuidForUpdate(wareSku);
             if (availableStock - wareOrderTaskDetail.getSkuNum() < 0) {
                 comment += "减库存异常：名称：" + wareOrderTaskDetail.getSkuName() + "，实际可用库存数" + availableStock + ",要求库存" + wareOrderTaskDetail.getSkuNum();
@@ -344,9 +346,11 @@ public class GwareServiceImpl implements GwareService {
                 wareSku.setStockLocked(wareOrderTaskDetail.getSkuNum());
                 wareSku.setSkuId(wareOrderTaskDetail.getSkuId());
                 // 加行级写锁 注意索引避免表锁
+                // UPDATE ware_sku SET stock_locked = IFNULL(stock_locked,0) + #{stockLocked}
+                // WHERE sku_id=#{skuId} and warehouse_id=#{warehouseId}
                 wareSkuMapper.incrStockLocked(wareSku);
             }
-            wareOrderTask.setTaskStatus(TaskStatus.DEDUCTED);
+            wareOrderTask.setTaskStatus(TaskStatus.DEDUCTED);// 已减库存
             updateStatusWareOrderTaskByOrderId(wareOrderTask.getOrderId(), TaskStatus.DEDUCTED);
         }
 

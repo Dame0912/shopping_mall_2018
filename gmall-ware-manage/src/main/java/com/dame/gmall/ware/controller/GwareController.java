@@ -95,7 +95,6 @@ public class GwareController {
     /**
      * 获取所有sku的库存信息
      *
-     * @param response
      * @return
      */
     @RequestMapping(value = "wareSkuList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

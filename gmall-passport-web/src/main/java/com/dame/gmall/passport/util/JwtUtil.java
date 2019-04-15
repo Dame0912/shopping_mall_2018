@@ -8,6 +8,7 @@ public class JwtUtil {
 
     /**
      * 加密，生成token
+     *
      * @param key
      * @param param
      * @param salt
@@ -25,6 +26,7 @@ public class JwtUtil {
 
     /**
      * 验证解密，同时取出消息体返回
+     *
      * @param token
      * @param key
      * @param salt

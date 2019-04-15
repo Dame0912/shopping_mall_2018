@@ -231,7 +231,7 @@ public class OrderServiceImpl implements OrderService {
      * 拆单接口，根据仓库的地址不同，进行的拆单
      *
      * @param orderId
-     * @param wareSkuMap
+     * @param wareSkuMap List<Map<wareId, skuIds>> 其中skuIds为List<String>
      * @return
      */
     @Override
