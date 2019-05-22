@@ -9,21 +9,23 @@ import java.util.List;
  */
 public class BaseAttrInfo implements Serializable {
 
-    // 获取主键自增atuo
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
+
     /**
      * 平台属性名称（如：内存）
      */
     @Column
     private String attrName;
+
     /**
      * 三级分类Id
      */
     @Column
     private String catalog3Id;
+    
     /**
      * 平台属性值列表
      */

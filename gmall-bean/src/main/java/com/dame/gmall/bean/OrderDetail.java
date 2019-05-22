@@ -10,27 +10,47 @@ import java.math.BigDecimal;
  * 订单明细
  */
 public class OrderDetail implements Serializable {
+
     @Id
     @Column
     private String id;
+
     /**
-     * 订单编号
+     * 订单id编号
      */
     @Column
     private String orderId;
+
+    /**
+     * skuid
+     */
     @Column
     private String skuId;
+
+    /**
+     * sku名称（冗余)
+     */
     @Column
     private String skuName;
+
+    /**
+     * 图片路径（冗余)
+     */
     @Column
     private String imgUrl;
+
     /**
      * 购买价格，下单时sku的价格
      */
     @Column
     private BigDecimal orderPrice;
+
+    /**
+     * 购买个数
+     */
     @Column
     private Integer skuNum;
+
     /**
      * 是否有库存的标识
      */

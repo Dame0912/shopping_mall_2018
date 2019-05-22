@@ -21,6 +21,12 @@ public class GmallListServiceApplicationTests {
     private JestClient jestClient;
 
     @Test
+    public void testQuery(){
+
+    }
+
+
+    @Test
     public void testES() {
         try {
             String query = "{\n" +

@@ -11,25 +11,32 @@ public class SkuSaleAttrValue implements Serializable {
 
     @Id
     @Column
-    String id;
+    private String id;
 
+    /**
+     * skuId
+     */
     @Column
-    String skuId;
+    private String skuId;
+
     /**
      * base销售属性Id
      */
     @Column
-    String saleAttrId;
+    private String saleAttrId;
+
     /**
      * spu的销售属性值Id
      */
     @Column
     String saleAttrValueId;
+
     /**
      * spu的销售属性名称（如：颜色）
      */
     @Column
     String saleAttrName;
+
     /**
      * spu的销售值属性名称（如：黑色）
      */

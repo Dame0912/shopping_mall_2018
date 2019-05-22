@@ -8,7 +8,7 @@ import com.dame.gmall.bean.PaymentInfo;
 import com.dame.gmall.bean.enums.PaymentStatus;
 import com.dame.gmall.config.ActiveMQUtil;
 import com.dame.gmall.payment.mapper.PaymentInfoMapper;
-import com.dame.gmall.payment.service.PaymentService;
+import com.dame.gmall.service.PaymentService;
 import org.apache.activemq.ScheduledMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,6 +147,20 @@ public class PaymentServiceImpl implements PaymentService {
             System.out.println("支付失败");
             return false;
         }
+    }
+
+    /**
+     * 关闭支付订单
+     *
+     * @param orderId
+     */
+    @Override
+    public void closePayment(String orderId) {
+        Example example = new Example(PaymentInfo.class);
+        example.createCriteria().andEqualTo("orderId", orderId);
+        PaymentInfo paymentInfo = new PaymentInfo();
+        paymentInfo.setPaymentStatus(PaymentStatus.ClOSED);
+        paymentInfoMapper.updateByExampleSelective(paymentInfo, example);
     }
 
 }

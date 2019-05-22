@@ -9,10 +9,10 @@
 <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="easyui/easyloader.js"></script>
 <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
-<link rel="stylesheet" type="text/css"
-	href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
 <script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
 </head>
+
 <script type="text/javascript">
 	$(function() {
 		$('#dg').datagrid({
@@ -61,47 +61,42 @@
 			pagination : true,
 			rownumbers : true
 		});
-
 	})
 </script>
+
 <body>
 	<!-- 用来定义工具栏 -->
 	<div id="tb">
-		<button class="easyui-linkbutton" data-options="iconCls:'icon-edit'"
-			onclick="edit()">发货</button>
-
+		<button class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="edit()">
+			发货
+		</button>
 	</div>
 	<!-- 设置添加，编辑窗口 -->
-	<div id="dlg" class="easyui-dialog"
-		style="width: 400px; height: 200px;" closed="true" buttons="#bb"
-		data-options="iconCls:'icon-save',resizable:true,modal:true">
+	<div id="dlg" class="easyui-dialog" style="width: 400px; height: 200px;" closed="true" buttons="#bb" data-options="iconCls:'icon-save',resizable:true,modal:true">
 		<!-- 将数据提交到后台 
   	  	form 少了一个action。
   	  -->
 		<div>用户信息</div>
 		<form id="fm" method="post">
 			<div>
-				<label  >用户名:</label> <input class="easyui-validatebox"
-					type="text" name="username" data-options="required:true" />
+				<label  >用户名:</label>
+				<input class="easyui-validatebox" type="text" name="username" data-options="required:true" />
 			</div>
 			<div>
-				<label  >密 码:</label> <input class="easyui-validatebox"
-					type="password" name="pwd" data-options="required:true" />
+				<label  >密 码:</label>
+				<input class="easyui-validatebox" type="password" name="pwd" data-options="required:true" />
 			</div>
-			<input>
 		</form>
 	</div>
 	<!-- 保存，关闭 -->
-	</div>
 	<div id="bb">
-		<a href="#" class="easyui-linkbutton" onclick="saveUser()">保存</a> <a
-			href="#" class="easyui-linkbutton"
-			onclick="javascript:$('#dlg').dialog('close')">关闭</a>
+		<a href="#" class="easyui-linkbutton" onclick="saveUser()">保存</a>
+		<a href="#" class="easyui-linkbutton" onclick="javascript:$('#dlg').dialog('close')">关闭</a>
 	</div>
 	<!-- 显示数据 -->
 	<table id="dg"></table>
-
 </body>
+
 <script type="text/javascript">
 	function add() {
 		// 点击的时候，要对话框出现
@@ -133,6 +128,7 @@
 			}
 		});
 	}
+
 	function edit() {
 		// 编辑：根据id进行修改。
 		var row = $("#dg").datagrid('getSelected')
@@ -143,6 +139,7 @@
 		// 提交的url地址！
 		url='/delivered?id='+row.id
 	}
+
 	function del() {
 		// 调用getSelected方法。
 		var row = $("#dg").datagrid('getSelected')
@@ -168,9 +165,7 @@
 				})
 			}
 		});
-
 	}
 </script>
-
 
 </html>

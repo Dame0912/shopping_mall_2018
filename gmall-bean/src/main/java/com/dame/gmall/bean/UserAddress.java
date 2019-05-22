@@ -4,19 +4,42 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * 用户地址
+ */
 public class UserAddress implements Serializable {
 
     @Column
     @Id
     private String id;
+
+    /**
+     * 用户地址
+     */
     @Column
     private String userAddress;
+
+    /**
+     * 用户id
+     */
     @Column
     private String userId;
+
+    /**
+     * 收件人
+     */
     @Column
     private String consignee;
+
+    /**
+     * 联系方式
+     */
     @Column
     private String phoneNum;
+
+    /**
+     * 是否默认
+     */
     @Column
     private String isDefault;
 

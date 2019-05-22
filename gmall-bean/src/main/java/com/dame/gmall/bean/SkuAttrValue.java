@@ -8,20 +8,26 @@ import java.io.Serializable;
  * sku的平台属性信息
  */
 public class SkuAttrValue implements Serializable {
+
     @Id
     @Column
     String id;
+
     /**
      * base 平台属性Id
      */
     @Column
     String attrId;
+
     /**
      * base 平台属性值Id
      */
     @Column
     String valueId;
 
+    /**
+     * skuId
+     */
     @Column
     String skuId;
 

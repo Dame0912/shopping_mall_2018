@@ -8,30 +8,36 @@ import java.util.List;
  * spu信息
  */
 public class SpuInfo implements Serializable {
+
     @Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
+
     /**
      * spu名称
      */
     @Column
     private String spuName;
+
     /**
      * 描述
      */
     @Column
     private String description;
+
     /**
      * 三级分类ID
      */
     @Column
     private String catalog3Id;
+
     /**
      * 销售属性信息
      */
     @Transient
     private List<SpuSaleAttr> spuSaleAttrList;
+
     /**
      * spu的图片信息
      */

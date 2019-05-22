@@ -10,14 +10,18 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 支付信息
+ */
 public class PaymentInfo implements Serializable {
+
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     /**
-     * 订单中已生成的对外交易编号。订单中获取
+     * 对外业务编号。订单Order中生成的对外交易编号。
      */
     @Column
     private String outTradeNo;
@@ -29,7 +33,7 @@ public class PaymentInfo implements Serializable {
     private String orderId;
 
     /**
-     * 订单编号  初始为空，支付宝回调时生成
+     * 支付宝交易编号。 初始为空，支付宝回调时存入
      */
     @Column
     private String alipayTradeNo;
@@ -41,10 +45,10 @@ public class PaymentInfo implements Serializable {
     private BigDecimal totalAmount;
 
     /**
-     * 订单名称。利用商品名称拼接。
+     * 交易内容。利用商品名称拼接。
      */
     @Column
-    private String Subject;
+    private String subject;
 
     /**
      * 支付状态。
@@ -111,11 +115,11 @@ public class PaymentInfo implements Serializable {
     }
 
     public String getSubject() {
-        return Subject;
+        return subject;
     }
 
     public void setSubject(String subject) {
-        Subject = subject;
+        this.subject = subject;
     }
 
     public PaymentStatus getPaymentStatus() {

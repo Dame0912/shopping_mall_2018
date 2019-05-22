@@ -17,12 +17,10 @@
         <input id="price" name="price" class="easyui-numberbox" data-options="min:0,precision:2" style="width:300px;"/>
         <br/><br/>
         <label>商品重量（千克):</label>
-        <input id="weight" name="weight" class="easyui-numberbox" data-options="min:0,precision:2"
-               style="width:300px;"/>
+        <input id="weight" name="weight" class="easyui-numberbox" data-options="min:0,precision:2" style="width:300px;"/>
         <br/><br/>
         <label>商品规格描述:</label>
-        <input id="skuDesc" name="skuDesc" class="easyui-textbox" data-options="multiline:true"
-               style="width:500px;height:100px"/>
+        <input id="skuDesc" name="skuDesc" class="easyui-textbox" data-options="multiline:true" style="width:500px;height:100px"/>
 
         <input id="spuIdForSku" name="spuId" type="hidden"/>
         <input id="skuId" name="id" type="hidden"/>
@@ -31,15 +29,14 @@
 
         <input id="skuInfo" name="skuInfo" type="hidden"/>
 
-
         <div id="attrInfoGroup" title="平台属性" class="easyui-panel" style="padding:5px;"></div>
 
         <div id="spuSaleAttrGroup" title="销售属性" class="easyui-panel" style="padding:5px;"></div>
 
-
-        <!----------------商品图片列表 ----------------------->
+        <!----------------------商品图片列表 ----------------------->
         <table id="skuImgDg" class="easyui-datagrid" title="商品图片列表"
-               data-options="singleSelect:false,selectOnCheck:false,method:'get'"></table>
+               data-options="singleSelect:false,selectOnCheck:false,method:'get'">
+        </table>
         <br/><br/>
     </form>
 </div>

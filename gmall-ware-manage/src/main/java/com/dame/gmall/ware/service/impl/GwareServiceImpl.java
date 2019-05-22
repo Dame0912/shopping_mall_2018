@@ -1,6 +1,5 @@
 package com.dame.gmall.ware.service.impl;
 
-
 import com.alibaba.fastjson.JSON;
 import com.dame.gmall.bean.WareInfo;
 import com.dame.gmall.bean.WareOrderTask;
@@ -25,35 +24,46 @@ import tk.mybatis.mapper.entity.Example;
 import javax.jms.*;
 import java.util.*;
 
-
 @Service
 public class GwareServiceImpl implements GwareService {
 
     @Autowired
-    WareSkuMapper wareSkuMapper;
+    private WareSkuMapper wareSkuMapper;
 
     @Autowired
-    WareInfoMapper wareInfoMapper;
+    private WareInfoMapper wareInfoMapper;
 
     @Autowired
-    WareOrderTaskMapper wareOrderTaskMapper;
+    private WareOrderTaskMapper wareOrderTaskMapper;
 
     @Autowired
-    WareOrderTaskDetailMapper wareOrderTaskDetailMapper;
+    private WareOrderTaskDetailMapper wareOrderTaskDetailMapper;
 
     @Autowired
-    ActiveMQUtil activeMQUtil;
+    private ActiveMQUtil activeMQUtil;
 
     @Value("${order.split.url}")
     private String ORDER_URL;
 
+
+    /**
+     * 查询库存数量，库存数量 — 锁定的库存数量
+     *
+     * @param skuid
+     * @return
+     */
     public Integer getStockBySkuId(String skuid) {
         Integer stock = wareSkuMapper.selectStockBySkuid(skuid);
-
         return stock;
     }
 
-
+    /**
+     * 判断是否有指定数量的库存
+     *
+     * @param skuid
+     * @param num
+     * @return
+     */
     public boolean hasStockBySkuId(String skuid, Integer num) {
         Integer stock = getStockBySkuId(skuid);
 
@@ -63,34 +73,34 @@ public class GwareServiceImpl implements GwareService {
         return true;
     }
 
-
+    /**
+     * 根据skuid查询仓库的信息
+     *
+     * @param skuid
+     * @return
+     */
     public List<WareInfo> getWareInfoBySkuid(String skuid) {
         List<WareInfo> wareInfos = wareInfoMapper.selectWareInfoBySkuid(skuid);
         return wareInfos;
     }
 
+    /**
+     * 获取所有的仓库信息
+     *
+     * @return
+     */
     public List<WareInfo> getWareInfoList() {
         List<WareInfo> wareInfos = wareInfoMapper.selectAll();
         return wareInfos;
     }
 
-
-    public void addWareInfo() {
-        WareInfo wareInfo = new WareInfo();
-        wareInfo.setAddress("1123");
-        wareInfo.setAreacode("123123");
-        wareInfo.setName("123123");
-        wareInfoMapper.insertSelective(wareInfo);
-
-
-        WareSku wareSku = new WareSku();
-        wareSku.setId(wareInfo.getId());
-        wareSku.setWarehouseId("991");
-        wareSkuMapper.insertSelective(wareSku);
-    }
-
-
-    public Map<String, List<String>> getWareSkuMap(List<String> skuIdlist) {
+    /**
+     * 将相同库存地址的 skuId 存放一起
+     *
+     * @param skuIdlist
+     * @return
+     */
+    private Map<String, List<String>> getWareSkuMap(List<String> skuIdlist) {
         Example example = new Example(WareSku.class);
         example.createCriteria().andIn("skuId", skuIdlist);
         List<WareSku> wareSkuList = wareSkuMapper.selectByExample(example);
@@ -105,14 +115,11 @@ public class GwareServiceImpl implements GwareService {
             skulistOfWare.add(wareSku.getSkuId());
             wareSkuMap.put(wareSku.getWarehouseId(), skulistOfWare);
         }
-
         return wareSkuMap;
-
     }
 
 
     public List<Map<String, Object>> convertWareSkuMapList(Map<String, List<String>> wareSkuMap) {
-
         List<Map<String, Object>> wareSkuMapList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : wareSkuMap.entrySet()) {
             Map<String, Object> skuWareMap = new HashMap<>();
@@ -123,14 +130,22 @@ public class GwareServiceImpl implements GwareService {
             wareSkuMapList.add(skuWareMap);
         }
         return wareSkuMapList;
-
     }
 
-
+    /**
+     * 保存sku的库存信息
+     *
+     * @param wareSku
+     */
     public void addWareSku(WareSku wareSku) {
         wareSkuMapper.insert(wareSku);
     }
 
+    /**
+     * 获取所有sku的库存信息
+     *
+     * @return
+     */
     public List<WareSku> getWareSkuList() {
         List<WareSku> wareSkuList = wareSkuMapper.selectWareSkuAll();
         return wareSkuList;
@@ -149,28 +164,28 @@ public class GwareServiceImpl implements GwareService {
 
 
     /***
-     * 出库操作  减库存和锁定库存，
-     * @param taskExample
+     * 出库操作，减库存和减锁定库存，通知订单系统订单出库
+     * @param wareOrderTask
      */
     @Transactional
-    public void deliveryStock(WareOrderTask taskExample) {
-        String trackingNo = taskExample.getTrackingNo();
-        WareOrderTask wareOrderTask = getWareOrderTask(taskExample.getId());
-        wareOrderTask.setTaskStatus(TaskStatus.DELEVERED);
-        List<WareOrderTaskDetail> details = wareOrderTask.getDetails();
+    public void deliveryStock(WareOrderTask wareOrderTask) {
+        String trackingNo = wareOrderTask.getTrackingNo();
+        WareOrderTask wareOrderTaskQuery = getWareOrderTask(wareOrderTask.getId());
+        wareOrderTaskQuery.setTaskStatus(TaskStatus.DELEVERED);
+        List<WareOrderTaskDetail> details = wareOrderTaskQuery.getDetails();
         for (WareOrderTaskDetail detail : details) {
             WareSku wareSku = new WareSku();
-            wareSku.setWarehouseId(wareOrderTask.getWareId());
+            wareSku.setWarehouseId(wareOrderTaskQuery.getWareId());
             wareSku.setSkuId(detail.getSkuId());
             wareSku.setStock(detail.getSkuNum());
+            // UPDATE ware_sku SET stock_locked = stock_locked - #{stock},
+            // stock = stock - #{stock} WHERE sku_id = #{skuId} and warehouse_id = #{warehouseId}
             wareSkuMapper.deliveryStock(wareSku);
         }
-
-        wareOrderTask.setTaskStatus(TaskStatus.DELEVERED);
-        wareOrderTask.setTrackingNo(trackingNo);
-        wareOrderTaskMapper.updateByPrimaryKeySelective(wareOrderTask);
+        wareOrderTaskQuery.setTrackingNo(trackingNo);
+        wareOrderTaskMapper.updateByPrimaryKeySelective(wareOrderTaskQuery);
         try {
-            sendToOrder(wareOrderTask);
+            sendToOrder(wareOrderTaskQuery);
         } catch (JMSException e) {
             e.printStackTrace();
         }
@@ -190,9 +205,14 @@ public class GwareServiceImpl implements GwareService {
 
         producer.send(mapMessage);
         session.commit();
-
     }
 
+    /**
+     * 拆单
+     *
+     * @param wareOrderTask
+     * @return
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<WareOrderTask> checkOrderSplit(WareOrderTask wareOrderTask) {
         List<WareOrderTaskDetail> details = wareOrderTask.getDetails();
@@ -200,42 +220,49 @@ public class GwareServiceImpl implements GwareService {
         for (WareOrderTaskDetail detail : details) {
             skulist.add(detail.getSkuId());
         }
+        // 将相同库存地址的 skuId 存放一起
         Map<String, List<String>> wareSkuMap = getWareSkuMap(skulist);
         if (wareSkuMap.size() == 1) {
             Map.Entry<String, List<String>> entry = wareSkuMap.entrySet().iterator().next();
             String wareid = entry.getKey();
             wareOrderTask.setWareId(wareid);
-        } else {
-            //需要拆单
+
+        } else {//需要拆单
+            // 拼参，请求订单系统拆单
             List<Map<String, Object>> wareSkuMapList = convertWareSkuMapList(wareSkuMap);
             String jsonString = JSON.toJSONString(wareSkuMapList);
             Map<String, String> map = new HashMap<>();
             map.put("orderId", wareOrderTask.getOrderId());
             map.put("wareSkuMap", jsonString);
-            String resultJson = HttpClientUtil.doPost(ORDER_URL, map);
+            String resultJson = HttpClientUtil.doPost(ORDER_URL, map);// 请求订单系统
             List<WareOrderTask> wareOrderTaskList = JSON.parseArray(resultJson, WareOrderTask.class);
+
             if (wareOrderTaskList.size() >= 2) {
                 for (WareOrderTask subOrderTask : wareOrderTaskList) {
+                    // 保存拆单后的订单和订单明细
                     subOrderTask.setTaskStatus(TaskStatus.DEDUCTED);
                     saveWareOrderTask(subOrderTask);
                 }
+                // 将原订单状态修改为：已拆分
                 updateStatusWareOrderTaskByOrderId(wareOrderTask.getOrderId(), TaskStatus.SPLIT);
                 return wareOrderTaskList;
             } else {
                 throw new RuntimeException("拆单异常!!");
             }
-
         }
-
         return null;
     }
 
-
+    /**
+     * 保存 wareOrderTask 和 wareOrderTaskDetail
+     *
+     * @param wareOrderTask
+     * @return
+     */
     public WareOrderTask saveWareOrderTask(WareOrderTask wareOrderTask) {
         wareOrderTask.setCreateTime(new Date());
         WareOrderTask wareOrderTaskQuery = new WareOrderTask();
         wareOrderTaskQuery.setOrderId(wareOrderTask.getOrderId());
-
         WareOrderTask wareOrderTaskOrigin = wareOrderTaskMapper.selectOne(wareOrderTaskQuery);
         if (wareOrderTaskOrigin != null) {
             return wareOrderTaskOrigin;
@@ -249,7 +276,6 @@ public class GwareServiceImpl implements GwareService {
             wareOrderTaskDetailMapper.insert(wareOrderTaskDetail);
         }
         return wareOrderTask;
-
     }
 
 
@@ -261,10 +287,14 @@ public class GwareServiceImpl implements GwareService {
         wareOrderTaskMapper.updateByExampleSelective(wareOrderTask, example);
     }
 
-
+    /**
+     * 利用mq，通知订单系统减库存状态，即是否成功
+     *
+     * @param wareOrderTask
+     * @throws JMSException
+     */
     public void sendSkuDeductMQ(WareOrderTask wareOrderTask) throws JMSException {
         Connection conn = activeMQUtil.getConn();
-
         Session session = conn.createSession(true, Session.SESSION_TRANSACTED);
         Destination destination = session.createQueue("SKU_DEDUCT_QUEUE");
         MessageProducer producer = session.createProducer(destination);
@@ -275,51 +305,62 @@ public class GwareServiceImpl implements GwareService {
         session.commit();
     }
 
+    /**
+     * 锁库存。
+     * 此处使用的是排他锁(select ... for update)，所以在该事务没有提交之前，其他操作都会等待。比如另一个线程查询该订单的库存量。
+     *
+     * @param wareOrderTask
+     */
     @Transactional
     public void lockStock(WareOrderTask wareOrderTask) {
         List<WareOrderTaskDetail> wareOrderTaskDetails = wareOrderTask.getDetails();
         String comment = "";
+        // 查询每个sku的可用数量
         for (WareOrderTaskDetail wareOrderTaskDetail : wareOrderTaskDetails) {
-
             WareSku wareSku = new WareSku();
             wareSku.setWarehouseId(wareOrderTask.getWareId());
             wareSku.setStockLocked(wareOrderTaskDetail.getSkuNum());
             wareSku.setSkuId(wareOrderTaskDetail.getSkuId());
-
-            int availableStock = wareSkuMapper.selectStockBySkuidForUpdate(wareSku); //查询可用库存 加行级写锁 注意索引避免表锁
+            // 查询可用库存，加行级写锁，注意索引避免表锁
+            // 行锁变表锁：索引失效导致，比如：where i = '1',但是i是数字类型的，此时用的string，导致索引失效，行锁变表锁
+            // select stock - IFNULL(stock_locked,0) as available_stock
+            // from ware_sku where sku_id=#{skuId} and warehouse_id=#{warehouseId} for update
+            int availableStock = wareSkuMapper.selectStockBySkuidForUpdate(wareSku);
             if (availableStock - wareOrderTaskDetail.getSkuNum() < 0) {
                 comment += "减库存异常：名称：" + wareOrderTaskDetail.getSkuName() + "，实际可用库存数" + availableStock + ",要求库存" + wareOrderTaskDetail.getSkuNum();
             }
         }
 
-        if (comment.length() > 0) {   //库存超卖 记录日志，返回错误状态
+        // 库存超卖 记录日志，返回错误状态
+        if (comment.length() > 0) {
             wareOrderTask.setTaskComment(comment);
             wareOrderTask.setTaskStatus(TaskStatus.OUT_OF_STOCK);
-            updateStatusWareOrderTaskByOrderId(wareOrderTask.getOrderId(), TaskStatus.OUT_OF_STOCK);
-
-        } else {   //库存正常  进行减库存
+            Example example = new Example(WareOrderTask.class);
+            example.createCriteria().andEqualTo("orderId", wareOrderTask.getOrderId());
+            wareOrderTaskMapper.updateByExampleSelective(wareOrderTask, example);
+            // updateStatusWareOrderTaskByOrderId(wareOrderTask.getOrderId(), TaskStatus.OUT_OF_STOCK);
+        } else {   // 库存正常  进行锁库存
             for (WareOrderTaskDetail wareOrderTaskDetail : wareOrderTaskDetails) {
-
                 WareSku wareSku = new WareSku();
                 wareSku.setWarehouseId(wareOrderTask.getWareId());
                 wareSku.setStockLocked(wareOrderTaskDetail.getSkuNum());
                 wareSku.setSkuId(wareOrderTaskDetail.getSkuId());
-
-                wareSkuMapper.incrStockLocked(wareSku); //  加行级写锁 注意索引避免表锁
-
+                // 加行级写锁 注意索引避免表锁
+                // UPDATE ware_sku SET stock_locked = IFNULL(stock_locked,0) + #{stockLocked}
+                // WHERE sku_id=#{skuId} and warehouse_id=#{warehouseId}
+                wareSkuMapper.incrStockLocked(wareSku);
             }
-            wareOrderTask.setTaskStatus(TaskStatus.DEDUCTED);
+            wareOrderTask.setTaskStatus(TaskStatus.DEDUCTED);// 已减库存
             updateStatusWareOrderTaskByOrderId(wareOrderTask.getOrderId(), TaskStatus.DEDUCTED);
-
         }
 
+        // 利用mq，通知订单系统锁库存是否成功
         try {
             sendSkuDeductMQ(wareOrderTask);
         } catch (JMSException e) {
             e.printStackTrace();
         }
         return;
-
     }
 
 
@@ -332,6 +373,5 @@ public class GwareServiceImpl implements GwareService {
         }
         return wareOrderTasks;
     }
-
 
 }

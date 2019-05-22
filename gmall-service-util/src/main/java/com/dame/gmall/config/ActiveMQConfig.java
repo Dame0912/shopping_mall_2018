@@ -33,6 +33,8 @@ public class ActiveMQConfig {
             return null;
         }
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        // 设置工厂
+        factory.setConnectionFactory(activeMQConnectionFactory);
         // 设置事务
         factory.setSessionTransacted(false);
         // 手动签收

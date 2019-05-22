@@ -6,30 +6,64 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * 用户信息
+ */
 public class UserInfo implements Serializable {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
+
+    /**
+     * 用户登录名称，登录使用
+     */
     @Column
     private String loginName;
+
+    /**
+     * 用户昵称，展示使用
+     */
     @Column
     private String nickName;
+
+    /**
+     * 用户密码
+     */
     @Column
     private String passwd;
+
+    /**
+     * 用户姓名
+     */
     @Column
     private String name;
+
+    /**
+     * 用户手机号
+     */
     @Column
     private String phoneNum;
+
+    /**
+     * 用户邮箱
+     */
     @Column
     private String email;
+
+    /**
+     * 用户头像
+     */
     @Column
     private String headImg;
+
+    /**
+     * 用户级别
+     */
     @Column
     private String userLevel;
 
-    // alt +insert
     public String getId() {
         return id;
     }

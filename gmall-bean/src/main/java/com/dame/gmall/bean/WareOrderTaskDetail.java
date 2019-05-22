@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
+ * 库存工作单明细
+ *
  * @param
  * @return
  */
@@ -16,15 +18,27 @@ public class WareOrderTaskDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
+    /**
+     * skuId
+     */
     @Column
     private String skuId;
 
+    /**
+     * sku名称
+     */
     @Column
     private String skuName;
 
+    /**
+     * 购买个数
+     */
     @Column
     private Integer skuNum;
 
+    /**
+     * 库存工作单Id
+     */
     @Column
     private String taskId;
 

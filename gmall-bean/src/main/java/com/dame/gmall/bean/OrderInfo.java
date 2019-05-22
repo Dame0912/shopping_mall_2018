@@ -57,7 +57,7 @@ public class OrderInfo implements Serializable {
     private OrderStatus orderStatus;
 
     /**
-     * 订单进度状态，程序控制、 后台管理查看
+     * 订单进度状态，程序控制、后台管理查看
      */
     @Column
     private ProcessStatus processStatus;
@@ -104,9 +104,15 @@ public class OrderInfo implements Serializable {
     @Column
     private String outTradeNo;
 
+    /**
+     * 订单明细
+     */
     @Transient
     private List<OrderDetail> orderDetailList;
 
+    /**
+     * 仓库id
+     */
     @Transient
     private String wareId;
 
@@ -130,7 +136,6 @@ public class OrderInfo implements Serializable {
         String tradeBody = orderDetail.getSkuName() + "等" + orderDetailList.size() + "件商品";
         return tradeBody;
     }
-
 
     public String getId() {
         return id;

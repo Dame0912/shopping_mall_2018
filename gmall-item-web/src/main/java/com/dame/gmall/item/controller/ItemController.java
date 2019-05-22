@@ -37,6 +37,12 @@ public class ItemController {
     @Qualifier("hotScoreExecutor")
     private ThreadPoolTaskExecutor hotScoreTaskExecutor;
 
+    /**
+     * 查询订单详情
+     * @param skuId
+     * @param modelMap
+     * @return
+     */
     @RequestMapping("{skuId}.html")
     public String skuInfoPage(@PathVariable(value = "skuId") String skuId, ModelMap modelMap) {
         LOGGER.info("skuInfoPage开始，入参SkuId：{}", skuId);
@@ -50,7 +56,7 @@ public class ItemController {
 
         // 通过spuId查询出所有的sku销售属性值
         List<SkuSaleAttrValue> skuSaleAttrValueListBySpu = manageService.getSkuSaleAttrValueListBySpu(skuInfo.getSpuId());
-        // 1|3|5 1
+        // 把列表变换成 valueid1|valueid2|valueid3 ：skuId  用于在页面中定位查询
         Map<String, String> map = new HashMap<>();
         StringBuffer jsonKey = new StringBuffer();
         for (int i = 0; i < skuSaleAttrValueListBySpu.size(); i++) {

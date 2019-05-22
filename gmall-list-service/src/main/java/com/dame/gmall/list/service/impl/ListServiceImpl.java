@@ -13,6 +13,7 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
@@ -82,9 +83,9 @@ public class ListServiceImpl implements ListService {
     // 从es中查询数据
     @Override
     public SkuLsResult search(SkuLsParams skuLsParams) {
-        // 构建查询语句
+        // 构建ES查询语句
         String query = makeQueryStringForSearch(skuLsParams);
-        // 查询es
+        // 查询ES
         Search search = new Search.Builder(query).addIndex(ES_INDEX).addType(ES_TYPE).build();
         SearchResult searchResult = null;
         try {
@@ -92,7 +93,7 @@ public class ListServiceImpl implements ListService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // 拼装返回参数
+        // 拼装ES返回参数
         SkuLsResult skuLsResult = makeResultForSearch(skuLsParams, searchResult);
         return skuLsResult;
     }
@@ -111,7 +112,7 @@ public class ListServiceImpl implements ListService {
         List<SearchResult.Hit<SkuLsInfo, Void>> hits = searchResult.getHits(SkuLsInfo.class);
         for (SearchResult.Hit<SkuLsInfo, Void> hit : hits) {
             SkuLsInfo skuLsInfo = hit.source;
-            // 将skuName给替换掉
+            // 将skuName给替换掉高亮显示的skuName
             Map<String, List<String>> highlight = hit.highlight;
             if (!CollectionUtils.isEmpty(highlight)) {
                 String skuNameHI = highlight.get("skuName").get(0);
@@ -120,6 +121,7 @@ public class ListServiceImpl implements ListService {
 
             skuLsInfoList.add(skuLsInfo);
         }
+        // skuLsInfo集合
         skuLsResult.setSkuLsInfoList(skuLsInfoList);
         // 总条数
         skuLsResult.setTotal(searchResult.getTotal());
@@ -187,18 +189,18 @@ public class ListServiceImpl implements ListService {
         // term": {"skuAttrValueList.valueId": "2"}
         if (null != skuLsParams.getValueId() && skuLsParams.getValueId().length > 0) {
             for (String valId : skuLsParams.getValueId()) {
-                TermQueryBuilder termQueryBuilder = new TermQueryBuilder("skuAttrValueList.valueId", valId);
+                TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("skuAttrValueList.valueId", valId);
                 boolQueryBuilder.filter(termQueryBuilder);
             }
         }
         // {"term": {"catalog3Id": "61"}}
         if (StringUtils.isNotBlank(skuLsParams.getCatalog3Id())) {
-            TermQueryBuilder termQueryBuilder = new TermQueryBuilder("catalog3Id", skuLsParams.getCatalog3Id());
+            TermQueryBuilder termQueryBuilder = QueryBuilders.termQuery("catalog3Id", skuLsParams.getCatalog3Id());
             boolQueryBuilder.filter(termQueryBuilder);
         }
         // "must": {"match": {"skuName": "手机"}}
         if (StringUtils.isNotBlank(skuLsParams.getKeyword())) {
-            MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("skuName", skuLsParams.getKeyword());
+            MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("skuName", skuLsParams.getKeyword());
             boolQueryBuilder.must(matchQueryBuilder);
         }
         searchSourceBuilder.query(boolQueryBuilder);
@@ -206,19 +208,21 @@ public class ListServiceImpl implements ListService {
         // highlight
         HighlightBuilder highlightBuilder = new HighlightBuilder().field("skuName").preTags("<span style='color:red'>").postTags("</span>");
         searchSourceBuilder.highlight(highlightBuilder);
+
         // 分页
         int from = (skuLsParams.getPageNo() - 1) * skuLsParams.getPageSize();
         searchSourceBuilder.from(from);
         searchSourceBuilder.size(skuLsParams.getPageSize());
+
         // sort
         searchSourceBuilder.sort("hotScore", SortOrder.DESC);
-        // "aggs": {"groupby_attr": {"terms": { "field": "skuAttrValueList.valueId" }}}
+
+        // 获取平台属性值，"aggs": {"groupby_attr": {"terms": { "field": "skuAttrValueList.valueId" }}}
         TermsBuilder termsBuilder = AggregationBuilders.terms("groupby_attr").field("skuAttrValueList.valueId");
         searchSourceBuilder.aggregation(termsBuilder);
 
         // 获取查询语句
         String query = searchSourceBuilder.toString();
-        System.out.println("query es:" + query);
         return query;
     }
 

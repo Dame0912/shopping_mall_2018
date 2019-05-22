@@ -30,7 +30,7 @@ public class OrderConsumer {
         if ("success".equals(result)) {
             // 更新订单状态
             orderService.updateOrderStatus(orderId, ProcessStatus.PAID);
-            // 通知减库存
+            // 通知库存系统减库存
             orderService.sendOrderStatus(orderId);
             // 更新订单状态
             orderService.updateOrderStatus(orderId, ProcessStatus.NOTIFIED_WARE);
@@ -44,13 +44,13 @@ public class OrderConsumer {
     /**
      * 库存系统减库存结果的监听器
      */
-    @JmsListener(destination = "SKU_DEDUCT_QUEUE", containerFactory = "jmsQueueListener")
+    @JmsListener(destination = "SKU_DEDUCT_QUEUE", containerFactory = "jmsQueueListenerContainerFactory")
     public void consumeSkuDeduct(MapMessage mapMessage) throws JMSException {
         String orderId = mapMessage.getString("orderId");
         String status = mapMessage.getString("status");
-        if ("DEDUCTED".equals(status)) {
+        if ("DEDUCTED".equals(status)) { // 库存系统减库存成功
             orderService.updateOrderStatus(orderId, ProcessStatus.WAITING_DELEVER);
-        } else {
+        } else { // 库存系统减库存失败
             orderService.updateOrderStatus(orderId, ProcessStatus.STOCK_EXCEPTION);
         }
     }

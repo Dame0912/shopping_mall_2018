@@ -37,6 +37,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public UserInfo login(UserInfo userInfo) {
+        // 数据中保存的密码是md5加密的
         String digestPwd = DigestUtils.md5DigestAsHex(userInfo.getPasswd().getBytes());
         userInfo.setPasswd(digestPwd);
         UserInfo selectUser = userInfoMapper.selectOne(userInfo);

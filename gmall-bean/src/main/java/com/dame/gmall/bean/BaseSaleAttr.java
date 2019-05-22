@@ -13,6 +13,9 @@ public class BaseSaleAttr implements Serializable {
     @Column
     String id;
 
+    /**
+     * 销售属性名称（如：颜色）
+     */
     @Column
     String name;
 

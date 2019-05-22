@@ -27,7 +27,7 @@
     </div>
     <div>
         一级分类：
-        <select id="ctg1ForSpuList"  class="easyui-combobox" style="width:100px"
+        <select id="ctg1ForSpuList" class="easyui-combobox" style="width:100px"
                 data-options="valueField:'id',textField:'name',url:'getCatalog1',
             onSelect:function(rec){
                 $('#ctg2ForSpuList').combobox('clear');
@@ -36,7 +36,7 @@
             }
         "></select>
         二级分类：
-        <select name="ctg2ForSpuList" id="ctg2ForSpuList"  class="easyui-combobox" style="width:100px"
+        <select name="ctg2ForSpuList" id="ctg2ForSpuList" class="easyui-combobox" style="width:100px"
                 data-options="valueField:'id',textField:'name',
             onSelect:function(rec){
                 $('#ctg3ForSpuList').combobox('clear');
@@ -44,7 +44,7 @@
             }"
         ></select>
         三级分类：
-        <select name="ctg3ForSpuList" id="ctg3ForSpuList"  class="easyui-combobox" style="width:100px"
+        <select name="ctg3ForSpuList" id="ctg3ForSpuList" class="easyui-combobox" style="width:100px"
                 data-options="valueField:'id',textField:'name',
                     onSelect:function(rec){
                         $('#spulist_dg').datagrid({url:'spuList?catalog3Id='+rec.id});

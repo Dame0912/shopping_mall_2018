@@ -1,4 +1,4 @@
-package com.dame.gmall.payment.service;
+package com.dame.gmall.service;
 
 import com.dame.gmall.bean.PaymentInfo;
 
@@ -37,16 +37,25 @@ public interface PaymentService {
 
     /**
      * 利用mq，发送延迟队列，查询支付宝，支付结果
+     *
      * @param outTradeNo 单号
-     * @param delaySec  延迟多少秒
-     * @param checkCount    查询次数
+     * @param delaySec   延迟多少秒
+     * @param checkCount 查询次数
      */
     public void sendDelayPaymentResult(String outTradeNo, int delaySec, int checkCount);
 
     /**
      * 查询支付宝，支付结果
+     *
      * @param paymentInfoQuery
      * @return
      */
     public boolean checkPayment(PaymentInfo paymentInfoQuery);
+
+    /**
+     * 关闭支付订单
+     *
+     * @param orderId
+     */
+    public void closePayment(String orderId);
 }

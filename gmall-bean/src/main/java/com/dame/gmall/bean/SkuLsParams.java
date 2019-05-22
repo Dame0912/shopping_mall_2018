@@ -1,13 +1,35 @@
 package com.dame.gmall.bean;
 
 import java.io.Serializable;
-import java.util.List;
 
+/**
+ * 检索商品入参dto
+ */
 public class SkuLsParams implements Serializable {
+
+    /**
+     * 三级分类Id
+     */
     private String catalog3Id;
+
+    /**
+     * 搜索框输入的关键字
+     */
     private String keyword;
+
+    /**
+     * 平台属性值ID
+     */
     private String[] valueId;
+
+    /**
+     * 分页展示的页码
+     */
     private int pageNo = 1;
+
+    /**
+     * 分页展示，每页展示的数量
+     */
     private int pageSize = 10;
 
     public String getCatalog3Id() {

@@ -9,22 +9,29 @@ import java.io.Serializable;
  * spu销售属性值信息
  */
 public class SpuSaleAttrValue implements Serializable {
+
     @Id
     @Column
     private String id;
 
+    /**
+     * spuId
+     */
     @Column
     private String spuId;
+
     /**
-     * Base销售属性Id
+     * base销售属性Id
      */
     @Column
     private String saleAttrId;
+
     /**
-     * spu销售属性值名称
+     * 销售属性值名称
      */
     @Column
     private String saleAttrValueName;
+
     /**
      * 对应的sku是否有该销售属性值，有：1；无：0
      */
